@@ -78,12 +78,15 @@ passport.deserializeUser(function (user: any, done: any) {
   done(null, user);
 });
 
+const callbackURL = process.env.SERVER_URL + "/auth/twitch/callback";
+console.log(callbackURL);
+
 passport.use('twitch', new OAuth2Strategy({
   authorizationURL: 'https://id.twitch.tv/oauth2/authorize',
   tokenURL: 'https://id.twitch.tv/oauth2/token',
   clientID: process.env.BOT_ID,
   clientSecret: process.env.BOT_SECRET,
-  callbackURL: process.env.REDIRECT_URL,
+  callbackURL: callbackURL,
   state: true
 },
   function (accessToken: string, refreshToken: string, profile: any, done: any) {
@@ -126,6 +129,6 @@ server.get('/', (req: any, res: any) => {
   else res.render('login');
 });
 
-http.listen(3000, () => {
-  console.log(`Server running on http://localhost:3000`)
+http.listen(process.env.PORT || 3000, () => {
+  console.log(`Server running on ${process.env.PORT || 3000}`)
 })
