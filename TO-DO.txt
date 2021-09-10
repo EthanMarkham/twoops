@@ -1,0 +1,7 @@
+IMPORTANT
+-fix hitboxes
+-add settings page
+
+
+IDEAS
+-multiple shots at once? random ball spawn location? 

@@ -24,14 +24,16 @@ const Scene = (_props: any) => {
 
     
     useEffect(() => {
-        socket.emit("JOIN_CHANNEL", channel)
+        socket.emit("JOIN_CHANNEL", channel);
+
         socket.on("NEW_SHOT", ({user, shot}: ShotData) => {
+            socket.emit("ACKNOWLEDGED_SHOT", channel);
             console.log('hooked shot', user, shot);
-            setShot(user, [shot.x, shot.y, shot.z])
+            setShot(user, [shot.x, shot.y, shot.z]);
         })
         return () => {
             socket.off("NEW_SHOT");
-            socket.emit("LEAVE_CHANNEL", channel)
+            socket.emit("LEAVE_CHANNEL", channel);
         }
     }, []);
 

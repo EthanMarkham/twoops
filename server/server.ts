@@ -7,9 +7,9 @@ import HTTP from 'http'
 
 import { SocketAPI } from './modules/webSocket'
 import { TwitchBot } from './modules/twitchBot'
-import { GameManager } from './modules/gameManager'
 import { App } from '../client/app'
 import { MongoAPI } from './modules/mongoApi'
+import { GameManager } from './modules/gameManager/types'
 
 require('dotenv').config()
 
@@ -18,7 +18,6 @@ const http = new HTTP.Server(server);
 const passport = require('passport');
 const OAuth2Strategy = require('passport-oauth').OAuth2Strategy;
 const request = require('request');
-const bodyParser = require('body-parser');
 
 server.set('view engine', 'ejs');
 server.set('views', path.join(__dirname, 'views'));
@@ -28,21 +27,21 @@ server.use('/', express.static(path.join(__dirname, 'static')))
 server.use(express.urlencoded({ extended: true }));
 //SERVICES 
 
-//DB
+//db connection
 const mongoAPI: MongoAPI = require('./modules/mongoApi');
 mongoAPI.init();
 
-//WEBSOCKET
+//websocket
 const socketAPI: SocketAPI = require('./modules/webSocket');
 socketAPI.init(http);
 
-//TWITCH BOT
+//twitchbot
 const twitchBot: TwitchBot = require('./modules/twitchBot');
 twitchBot.init();
 
 //GAME MANAGER
 const gameManager: GameManager = require('./modules/gameManager');
-gameManager.init();
+gameManager.addListeners();
 
 //TWITCH AUTH
 server.use(require('express-session')({ secret: process.env.SESSION_SECRET, resave: false, saveUninitialized: false }));
@@ -109,7 +108,7 @@ server.get('/auth/twitch', passport.authenticate('twitch', { scope: 'user_read' 
 server.get('/auth/twitch/callback', passport.authenticate('twitch', { successRedirect: '/', failureRedirect: '/' }));
 
 //API
-const apiRouter = require('./routes/api');
+const apiRouter = require('./routes/game');
 server.use('/api', apiRouter);
 
 

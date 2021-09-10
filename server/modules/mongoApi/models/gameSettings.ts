@@ -34,15 +34,25 @@ export default class GameSetting {
         public ballSpawn: Triplet = [-18, 5, 0],
         public alphaChannel: string = "#808080",
         public chat: {
+            responseEnabled: boolean,
             delay: number,
             shotAcknowledged: string,
+            bucketResponse: string,
+            brickResponse: string,
+            airballResponse: string,
             inProgressMessage: string,
+            firstTryMessage: string,
         } = {
+            responseEnabled: true,
             delay: 10000,
             shotAcknowledged: "@user is shooting!",
             inProgressMessage: "@user ⏰ 🕐 ⏲ 🕝",       
+            bucketResponse: "justKobe  Nice Shot! Getbuckets @user Got a Bucket! ShaqSpicy ShaqSpicy",       
+            brickResponse: "CLONK!  @user bricked it",       
+            airballResponse: "Ooof! @user shot an AIRBALL!",
+            firstTryMessage: " ON THE FIRST TRY!! ShaqSpicy ShaqSpicy justKobe justKobe pikachuS",
         },
-        public id?: ObjectId
+        public _id?: ObjectId
     ) { }
 
 }

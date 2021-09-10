@@ -5,7 +5,7 @@ const uuid = require('uuid');
 
 export interface ChatListener {
     command: string,
-    callback: (channel: string, tags: any, commands: Array<string>) => string | null,
+    callback: (channel: string, tags: any, commands: Array<string>) => void,
 }
 
 export interface TwitchBot {
@@ -69,10 +69,7 @@ const twitchBot: TwitchBot = module.exports = {
         } catch (e) { console.log(e); return; }
 
         twitchBot.messageHandlers.forEach((msgHandler: ChatListener) => {
-            if (commandName == msgHandler.command) {
-                let output = msgHandler.callback(channel, tags, commands);
-                if (output) twitchBot.client.say(channel, output);
-            }
+            if (commandName == msgHandler.command) msgHandler.callback(channel, tags, commands)
         })
     }
 }

@@ -1,7 +1,8 @@
-import { Triplet, shotConverter, ShotInfo, ShotResult, Result } from '../utils';
+/*
+import { Triplet, shotConverter, ShotInfo, ShotResult, Result } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 import { MongoAPI } from '../../mongoApi';
-import GameSetting from '../../mongoApi/models/settings';
+import GameSetting from '../../mongoApi/models/gameSettings';
 import { TwitchBot } from '../../twitchBot';
 
 const shotConversions: Triplet = {
@@ -10,7 +11,7 @@ const shotConversions: Triplet = {
     z: 3,
 }
 
-export interface RoundInfo {
+interface RoundInfo {
     id: string,
     shots: Array<ShotResult>,
     inProgress: boolean
@@ -100,3 +101,4 @@ export class Game {
     }
 }
 
+*/

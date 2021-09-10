@@ -159,10 +159,13 @@ const useStore = create<Store>((set, get) => ({
                 y: copy.roundInfo.shot.throwValues[1],
                 z: copy.roundInfo.shot.throwValues[2]
             },
-            result: copy.roundInfo.results.success ? "SUCCESS" : copy.roundInfo.results.isAirball ? "AIRBALL" : "BRICK"
+            result: copy.roundInfo.results.success ? "SUCCESS" : copy.roundInfo.results.isAirball ? "AIRBALL" : "BRICK",
+            channel: copy.settings.channel,
         };
         console.log('posting', body)
-        fetch('/api/postShot', {
+
+        //add to backend
+        fetch('/api/logShot', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

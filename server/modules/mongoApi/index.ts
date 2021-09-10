@@ -5,6 +5,8 @@ require('dotenv').config();
 
 export interface MongoAPI{
     collections: Map<string, mongoDB.Collection>,
+    client: mongoDB.MongoClient,
+    db: mongoDB.Db | null,
     init: () => void,
     get: (collection: string, filter: mongoDB.Filter<mongoDB.Document>) => Promise<any[]>
     getOne: (collection: string, filter: mongoDB.Filter<mongoDB.Document>) => any,
@@ -12,27 +14,28 @@ export interface MongoAPI{
     updateItem: (id: string, collection: string, item: any) => Promise<boolean>
 }
 
-interface Settings{
+interface ENV{
     DB_CONN_STRING: string,
     DB_NAME: string,
     SETTINGS_COLLECTION_NAME: string
+    ROUND_COLLECTION_NAME: string
 }
 
+const {DB_CONN_STRING, DB_NAME, SETTINGS_COLLECTION_NAME, ROUND_COLLECTION_NAME}: ENV = (process.env) as unknown as ENV
+
+if (!DB_CONN_STRING || !DB_NAME || !SETTINGS_COLLECTION_NAME || !ROUND_COLLECTION_NAME) throw new Error('Missing DB connection settings. Check ENV vars.');
+
 const mongoAPI: MongoAPI = module.exports = {
+    client: new mongoDB.MongoClient(DB_CONN_STRING),
+    db: null,
     collections: new Map<string, mongoDB.Collection>(),
     init: () => {
-        const {DB_CONN_STRING, DB_NAME, SETTINGS_COLLECTION_NAME}: Settings = (process.env) as unknown as Settings
-
-        if (!DB_CONN_STRING) throw new Error('Missing DB connection string');
-        if (!DB_NAME) throw new Error("Missing DB name");
-        if (!SETTINGS_COLLECTION_NAME) throw new Error("Missing Settings Collection Name");
-        
-        const client: mongoDB.MongoClient = new mongoDB.MongoClient(DB_CONN_STRING);
-        client.connect().then(() => {
-            const db: mongoDB.Db = client.db(DB_NAME);  
+        mongoAPI.client.connect().then(() => {
+            mongoAPI.db = mongoAPI.client.db(DB_NAME);  
             //add collections
-            mongoAPI.collections.set(SETTINGS_COLLECTION_NAME, db.collection(SETTINGS_COLLECTION_NAME));
-            console.log(`Successfully connected to database: ${db.databaseName}`);
+            mongoAPI.collections.set(ROUND_COLLECTION_NAME, mongoAPI.db.collection(ROUND_COLLECTION_NAME));
+            mongoAPI.collections.set(SETTINGS_COLLECTION_NAME, mongoAPI.db.collection(SETTINGS_COLLECTION_NAME));
+            console.log(`Successfully connected to database: ${mongoAPI.db.databaseName}`);
         });
     },
     get: (collection: string, filter: mongoDB.Filter<mongoDB.Document> = {}) => {
