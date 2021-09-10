@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 import { Triplet } from '@react-three/cannon';
 
 //can I share interface between client and server?
-interface Limits{
+export interface Limits{
     MIN: number, 
     MAX: number
 }
@@ -11,6 +11,17 @@ export interface Boundries{
     x: Limits,
     y: Limits,
     z: Limits
+}
+
+export interface ChatSettings {
+    responseEnabled: boolean,
+    delay: number,
+    shotAcknowledged: string,
+    bucketResponse: string,
+    brickResponse: string,
+    airballResponse: string,
+    inProgressMessage: string,
+    firstTryMessage: string,
 }
 
 export default class GameSetting {
@@ -30,19 +41,9 @@ export default class GameSetting {
                 MAX: 10
             },
         },
-        public resetTime: number = 5000,
         public ballSpawn: Triplet = [-18, 5, 0],
         public alphaChannel: string = "#808080",
-        public chat: {
-            responseEnabled: boolean,
-            delay: number,
-            shotAcknowledged: string,
-            bucketResponse: string,
-            brickResponse: string,
-            airballResponse: string,
-            inProgressMessage: string,
-            firstTryMessage: string,
-        } = {
+        public chat: ChatSettings = {
             responseEnabled: true,
             delay: 10000,
             shotAcknowledged: "@user is shooting!",

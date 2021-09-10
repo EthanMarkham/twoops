@@ -1,10 +1,10 @@
 import React, { Suspense, useEffect } from 'react';
-import useStore  from '../../store';
+import useStore  from '../store';
 import { Canvas } from '@react-three/fiber';
 import { Physics, Triplet  } from '@react-three/cannon';
-import Environment from './components/Enviroment';
-import Ball from './components/Ball';
-import Hoop from './components/Hoop';
+import Environment from './Enviroment';
+import Ball from './Ball';
+import Hoop from './Hoop';
 import { Socket } from 'socket.io-client';
 
 interface ShotData {

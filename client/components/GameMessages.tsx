@@ -1,7 +1,7 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useTransition, config } from 'react-spring';
-import useStore from '../../store';
-import { InfoBox, RoundInfo, AttemptCount, MessageBox, SvgHolder, MessageText, Wrapper } from './style';
+import useStore from '../store';
+import { InfoBox, RoundInfo, AttemptCount, MessageBox, SvgHolder, MessageText, Wrapper } from '../styles/gameMessages';
 
 const WIN = "WIN";
 const AIRBALL = "AIRBALL";
@@ -18,13 +18,21 @@ const GameMessages = (props: any) => {
     const user = useStore(state => state.roundInfo.shot.user);
     const { success, isAirball, showing } = useStore(state => state.roundInfo.results);
     const attempts = useStore(state => state.roundInfo.attempts);
+    const [isShowing, setShowing] = useState<boolean>(false);
+    
+    useEffect(() => {
+        if (showing) {
+            setShowing(true);
+            setTimeout(() => setShowing(false), 5000);
+        }
+    }, [showing])
 
     const message: GameMessage = useMemo<GameMessage>(() => ({
-        showing: showing,
+        showing: isShowing,
         user: user ? user : "",
         state: success ? WIN : isAirball ? AIRBALL : BRICK,
         text: success ? "NICE" : isAirball ? "OOOOOOOOF!" : "CLONK!",
-    }), [isAirball, user, success, showing]);
+    }), [isAirball, user, success, isShowing]);
 
     const messageTransition = useTransition(message, {
         from: { opacity: 0 },

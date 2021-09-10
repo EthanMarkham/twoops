@@ -1,45 +1,33 @@
+import { Triplet } from '@react-three/cannon';
 import React, { Suspense, useEffect, useMemo } from 'react';
 import useStore, { Page } from './store';
 import { PageHolder } from './styles';
 import GlobalFonts from './styles/fonts';
 
-const ROUND_RESET_TIMER = 4000;
+const BucketGame = React.lazy(() => import('./components/ThreeCanvas'));
+const GameMessages = React.lazy(() => import('./components/GameMessages'));
+const Loading = React.lazy(() => import('./components/Loading'));
 
-const BucketGame = React.lazy(() => import('./components/canvas'));
-const Results = React.lazy(() => import('./components/results'));
-const Loading = React.lazy(() => import('./components/loading'));
+interface GameDataResponse {
+    newSettings: boolean,
+    ballsSpawn: Triplet,
+    alphaChannel: string,
+    channel: string,
+    hoopLocation: Triplet,
+    attempts: number,
+}
 
 export const App: React.FC = () => {
     const page = useStore(state => state.pageIndex);
-
-    const set = useStore(state => state.set);
-    const setPage = useStore(state => state.setPage);
-    const setError = useStore(state => state.setError);
-    const newRound = useStore(state => state.newRound);
-
+    const init = useStore(state => state.getGameData);
+    const logResult = useStore(state => state.logResult);
     const roundOverTrigger = useStore(state => state.roundInfo.roundOverTrigger);
 
     //get data
-    useEffect(() => {
-        fetch('/api/init')
-            .then((data: any) => data.json())
-            .then((data: any) => {
-                console.log(data);
-                if (data.newSettings) {
-                    //start tutorial
-                    console.log("caught new settings")
-                }
-                if (data.error) setError(new Error(data.message));
-                else {
-                    set(data);
-                    setPage(Page.GAME);
-                }
-            })
-    }, [])
-
+    useEffect(init, [])
     useEffect(() => { 
-        roundOverTrigger && setTimeout(() => newRound(), ROUND_RESET_TIMER);
-     }, [roundOverTrigger])
+        if (roundOverTrigger) logResult(); 
+    }, [roundOverTrigger])
 
     const renderPage = (page: Page) => {
         switch (page) {
@@ -48,7 +36,7 @@ export const App: React.FC = () => {
             case Page.GAME:
                 return (<PageHolder>
                     <BucketGame />
-                    <Results />
+                    <GameMessages />
                 </PageHolder>)
             default:
                 throw new Error("No Page Index Set")

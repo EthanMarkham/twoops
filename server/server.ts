@@ -8,8 +8,8 @@ import HTTP from 'http'
 import { SocketAPI } from './modules/webSocket'
 import { TwitchBot } from './modules/twitchBot'
 import { App } from '../client/app'
-import { MongoAPI } from './modules/mongoApi'
-import { GameManager } from './modules/gameManager/types'
+import { MongoAPI } from './modules/mongoAPI'
+import { GameManager } from './modules/gameManager'
 
 require('dotenv').config()
 

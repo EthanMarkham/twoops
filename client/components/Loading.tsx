@@ -1,6 +1,6 @@
 import React from "react";
 import { useSpring, config } from 'react-spring';
-import { AnimatedWrapper, Img, PageHolder } from "../../styles";
+import { AnimatedWrapper, Img, PageHolder } from "../styles";
 
 const Loading = (props: any) => {
 

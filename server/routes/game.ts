@@ -1,4 +1,4 @@
-import { GameManager, RoundResponse, SettingsResponse, ShotResult } from "../modules/gameManager/types";
+import { GameManager, RoundResponse, SettingsResponse, ShotResult } from "../modules/gameManager";
 import { TwitchBot } from "../modules/twitchBot";
 
 require('dotenv').config();
@@ -13,28 +13,27 @@ router.get("/init", verifyUser, async (req: any, res: any) => {
 
     twitchBot.joinChannel(req.session.passport.user.data[0].login); //join twitch chat for user
 
-    gameManager.getSettings(req.session.passport.user.data[0].login)
-        .then((settingsResponse: SettingsResponse) => {
+    gameManager.getAggregatedData(req.session.passport.user.data[0].login)
+        .then(({ settings, roundInfo, newUser }) => {
             return res.json({
-                newSettings: settingsResponse.new,
-                ballsSpawn: settingsResponse.settings.ballSpawn,
-                alphaChannel: settingsResponse.settings.alphaChannel,
-                channel: settingsResponse.settings.channel,
-                hoopSpawn: settingsResponse.settings.hoopsSpawn,
-                resetTime: settingsResponse.settings.resetTime
+                newSettings: newUser,
+                ballsSpawn: settings.ballSpawn,
+                alphaChannel: settings.alphaChannel,
+                channel: settings.channel,
+                hoopLocation: roundInfo.hoopLocation,
+                attempts: roundInfo.shots.length,
+                roundID: roundInfo._id,
             })
         })
 });
 
 router.post("/logShot", verifyUser, async (req: any, res: any) => {
     let shotResult: ShotResult = req.body;
-    gameManager.logResult(req.body.channel, shotResult)
-   console.log('logging shot result', req.body.channel, shotResult)
-    return res.json({ error: false });
-
+    gameManager.logResult(req.session.passport.user.data[0].login, shotResult)
+    .then(response => {
+        return res.json(response);
+    })
 });
-
-
 
 function verifyUser(req: any, res: any, next: any) {
     if (!req.session && !req.session.passport && !req.session.passport.user && !req.session.passport.user.data[0] && !req.session.passport.user.data[0].login) {

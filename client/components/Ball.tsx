@@ -1,7 +1,7 @@
 import { useSphere } from '@react-three/cannon';
 import { useGLTF } from '@react-three/drei';
 import React, { useEffect, useState } from 'react';
-import useStore from '../../../store';
+import useStore from '../store';
 import { Mesh, MeshStandardMaterial } from 'three';
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 
@@ -39,13 +39,13 @@ type GLTFResult = GLTF & {
 const Ball = (_props: any) => {
     const { nodes, materials } = useGLTF("/assets/models/ballModel.glb") as GLTFResult;
     const triggerNewRound = useStore(state => state.triggerNewRound);
+    const [newRoundTriggered, setNewRoundTriggered] = useState<boolean>(false);
 
     const settings = useStore(state => state.settings);
     const { user, throwValues } = useStore(state => state.roundInfo.shot);
-    const roundID = useStore(state => state.roundInfo.id);
+    const { id, attempts } = useStore(state => state.roundInfo);
 
     const [inProgress, setInProgress] = useState<boolean>(false);
-    const [newRoundTriggered, setNewRoundTriggered] = useState<boolean>(false);
 
     const [ref, api] = useSphere(() => ({
         mass: 1,
@@ -73,12 +73,14 @@ const Ball = (_props: any) => {
 
     //reset ball when roundID changes
     useEffect(() => {
-        setNewRoundTriggered(false);
-        setInProgress(false);
-        api.velocity.set(0, 0, 0);
-        api.angularVelocity.set(0, 0, 0);
-        api.position.set(settings.ballSpawn[0], settings.ballSpawn[1], settings.ballSpawn[2]);
-    }, [roundID])
+        setTimeout(() => {
+            setNewRoundTriggered(false);
+            setInProgress(false);
+            api.velocity.set(0, 0, 0);
+            api.angularVelocity.set(0, 0, 0);
+            api.position.set(settings.ballSpawn[0], settings.ballSpawn[1], settings.ballSpawn[2]);
+        }, 2000)
+    }, [id, attempts])
 
     return (
         <mesh

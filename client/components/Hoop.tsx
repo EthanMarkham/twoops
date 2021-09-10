@@ -1,10 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState, useRef } from 'react'
 import { useGLTF } from '@react-three/drei'
 import { Triplet, useTrimesh } from '@react-three/cannon';
-import useStore from '../../../store';
 import { useFrame, Vector3 } from '@react-three/fiber';
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
-import { getRandomPosition, Boundries } from '../../../utils/getRandomHoopPosition';
+import useStore, { Store } from '../store';
 
 type GLTFResult = GLTF & {
     nodes: {
@@ -37,15 +36,13 @@ interface HitBoxPositions {
 
 export default function Hoop(_props: any) {
     const { nodes, materials } = useGLTF("/assets/models/hoopModel.glb") as GLTFResult;
-    const hoopBoundries: Boundries = useStore(state => state.settings.hoopSpawn);
     const roundOverTrigger: boolean = useStore(state => state.roundInfo.roundOverTrigger);
-    const shouldMove: boolean = useStore(state => state.roundInfo.results.success);
+    const hoopPosition = useStore(state => state.roundInfo.hoopLocation);
 
     const setResults = useStore(state => state.setResults);
 
     const hoop = useRef();
 
-    const [hoopPosition, setHoopPosition] = useState(getRandomPosition(hoopBoundries));
     const [isAirball, setAirball] = useState<boolean>(true);
 
     const [hitTop, setHitTop] = useState<boolean>(false);
@@ -121,11 +118,6 @@ export default function Hoop(_props: any) {
         bottomBucketAPI.position.set(...offsetTriplet(hitbox.bottom, [0, -2, -0]));
     }, [hitbox, hoopAPI.position.set, topBucketAPI.position.set, bottomBucketAPI.position.set])
 
-    //move hoop if boundries change or new round
-    useEffect(() => {
-        if (roundOverTrigger && shouldMove)
-        setHoopPosition(getRandomPosition(hoopBoundries));
-    }, [hoopBoundries, roundOverTrigger, shouldMove]);
 
     useEffect(moveHitBoxes, [moveHitBoxes]);
 
