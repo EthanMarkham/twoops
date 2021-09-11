@@ -1,5 +1,6 @@
-import { Triplet } from '@react-three/cannon';
-import React, { Suspense, useEffect, useMemo } from 'react';
+
+import React, { Suspense, useEffect } from 'react';
+import ReactDOM from 'react-dom'
 import useStore, { Page } from './store';
 import { PageHolder } from './styles';
 import GlobalFonts from './styles/fonts';
@@ -7,15 +8,6 @@ import GlobalFonts from './styles/fonts';
 const BucketGame = React.lazy(() => import('./components/ThreeCanvas'));
 const GameMessages = React.lazy(() => import('./components/GameMessages'));
 const Loading = React.lazy(() => import('./components/Loading'));
-
-interface GameDataResponse {
-    newSettings: boolean,
-    ballsSpawn: Triplet,
-    alphaChannel: string,
-    channel: string,
-    hoopLocation: Triplet,
-    attempts: number,
-}
 
 export const App: React.FC = () => {
     const page = useStore(state => state.pageIndex);
@@ -47,3 +39,5 @@ export const App: React.FC = () => {
         </PageHolder >
     );
 }
+
+ReactDOM.hydrate(<App />, document.getElementById('root'))

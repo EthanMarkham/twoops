@@ -1,20 +1,12 @@
 import React, { Suspense, useEffect } from 'react';
-import useStore  from '../store';
+import useStore from '../store';
 import { Canvas } from '@react-three/fiber';
-import { Physics, Triplet  } from '@react-three/cannon';
+import { Physics, Triplet } from '@react-three/cannon';
 import Environment from './Enviroment';
 import Ball from './Ball';
 import Hoop from './Hoop';
 import { Socket } from 'socket.io-client';
-
-interface ShotData {
-    user: string,
-    shot: {
-        x: number, 
-        y: number,
-        z: number,
-    }
-}
+import { ShotInfo } from '../../server/types/game';
 
 const Scene = (_props: any) => {
     const { ballSpawn, alphaChannel } = useStore(state => state.settings);
@@ -22,11 +14,11 @@ const Scene = (_props: any) => {
     const channel = useStore(state => state.settings.channel);
     const setShot: (user: string, value: Triplet) => void = useStore(state => state.setShot);
 
-    
+
     useEffect(() => {
         socket.emit("JOIN_CHANNEL", channel);
 
-        socket.on("NEW_SHOT", ({user, shot}: ShotData) => {
+        socket.on("NEW_SHOT", ({ user, shot }: ShotInfo) => {
             socket.emit("ACKNOWLEDGED_SHOT", channel);
             console.log('hooked shot', user, shot);
             setShot(user, [shot.x, shot.y, shot.z]);
@@ -47,7 +39,7 @@ const Scene = (_props: any) => {
                 overflow: 'hidden'
             }}
             frameloop="demand"
-            >
+        >
             <Physics>
                 <Environment ballPosition={ballSpawn} />
                 <Suspense fallback={null}>

@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState, useRef } from 'react'
 import { useGLTF } from '@react-three/drei'
 import { Triplet, useTrimesh } from '@react-three/cannon';
-import { useFrame, Vector3 } from '@react-three/fiber';
+import { useFrame } from '@react-three/fiber';
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
-import useStore, { Store } from '../store';
+import useStore from '../store';
 
 type GLTFResult = GLTF & {
     nodes: {
@@ -22,17 +22,17 @@ type GLTFResult = GLTF & {
     }
 }
 
-const offsetTriplet: (current: Triplet, offset: Triplet) => Triplet = (current, offset = [0, 0, 0]) => ([
-    offset[0] + current[0],
-    offset[1] + current[1],
-    offset[2] + current[2]
-]);
-
 interface HitBoxPositions {
     top: Triplet,
     bottom: Triplet,
     main: Triplet,
 }
+
+const offsetTriplet: (current: Triplet, offset: Triplet) => Triplet = (current, offset = [0, 0, 0]) => ([
+    offset[0] + current[0],
+    offset[1] + current[1],
+    offset[2] + current[2]
+]);
 
 export default function Hoop(_props: any) {
     const { nodes, materials } = useGLTF("/assets/models/hoopModel.glb") as GLTFResult;

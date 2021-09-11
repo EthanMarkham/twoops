@@ -1,7 +1,14 @@
-import { Triplet } from '@react-three/cannon';
 import create from 'zustand';
 import socketIO, { Socket } from 'socket.io-client';
 import { v4 } from 'uuid';
+import { Triplet } from '@react-three/cannon';
+
+export enum Page {
+    LOADING = "LOADING",
+    SETTINGS = "SETTINGS",
+    GAME = "GAME",
+    ERROR = "ERROR",
+}
 
 interface RoundInfo {
     id: string,
@@ -19,6 +26,7 @@ interface RoundInfo {
         showing: boolean,
     },
 }
+
 interface SettingsInfo {
     channel: string,
     ballSpawn: Triplet,
@@ -40,13 +48,6 @@ export interface Store {
     setShot: (user: string, value: Triplet) => void,
     setResults: (data: ResultMessage) => void,
     requestResults: () => void,
-}
-
-export enum Page {
-    LOADING = "LOADING",
-    SETTINGS = "SETTINGS",
-    GAME = "GAME",
-    ERROR = "ERROR",
 }
 
 const DEFAULTS: {
@@ -124,31 +125,16 @@ const useStore = create<Store>((set, get) => ({
     },
     setResults: ({ success, isAirball }) => {
         const copy: Store = get();
-        const shotBody = {
-            user: copy.roundInfo.shot.user,
-            throw: copy.roundInfo.shot.throwValues,
-            result: success ? "SUCCESS" : isAirball ? "AIRBALL" : "BRICK",
-        }
-
-        set(state => ({
-            ...state,
-            roundInfo: {
-                ...state.roundInfo,
-                results: {
-                    requested: false,
-                    showing: true,
-                    isAirball: isAirball,
-                    success: success,
-                }
-            }
-        }))
-
         fetch('/api/logShot', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(shotBody)
+            body: JSON.stringify({
+                user: copy.roundInfo.shot.user,
+                throw: copy.roundInfo.shot.throwValues,
+                result: success ? "SUCCESS" : isAirball ? "AIRBALL" : "BRICK",
+            })
         })
             .then(response => response.json())
             .then(data => {
@@ -161,8 +147,21 @@ const useStore = create<Store>((set, get) => ({
                         id: data.roundID,
                         attempts: data.attempts,
                     }
-                }))
+                }));
             })
+
+        set(state => ({
+            ...state,
+            roundInfo: {
+                ...state.roundInfo,
+                results: {
+                    requested: false,
+                    showing: true,
+                    isAirball: isAirball,
+                    success: success,
+                }
+            }
+        }));
     },
     requestResults: () => set(state => ({
         ...state,
