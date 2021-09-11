@@ -1,7 +1,7 @@
 // tsconfig.client.json
 {
   "include": [
-    "client"
+    "src/client"
   ],
   "compilerOptions": {
     "module": "es2020", // generate ES modules
