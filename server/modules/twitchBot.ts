@@ -1,5 +1,4 @@
 require('dotenv').config();
-const events = require('events');
 const tmi = require('tmi.js');
 const uuid = require('uuid');
 
@@ -15,6 +14,7 @@ export interface TwitchBot {
     say: (message: string, channel: string) => void,
     addListener: (action: ChatListener) => string,
     joinChannel: (channel: string) => void,
+    leaveChannel: (channel: string) => void,
     removeEvent: (id: string) => void,
     handleMessage: (channel: string, tags: Array<string>, message: string, self: any) => void,
 }
@@ -35,15 +35,15 @@ const twitchBot: TwitchBot = module.exports = {
         },
         channels: null
     }),
-    say: (message: string, channel: string) => {
+    say(message: string, channel: string){
         twitchBot.client.say(channel, message);
     },
-    init: () => {
+    init(){
         twitchBot.client.on('message', twitchBot.handleMessage);
         twitchBot.client.on('connected', (addr: any, port: any) => console.log(`* Connected to ${addr}:${port}`));
         twitchBot.client.connect();
     },
-    joinChannel: (channel: string) => {
+    joinChannel(channel: string){
         if (twitchBot.client.channels.indexOf(`#${channel}`) !== -1) return;
         twitchBot.client.join(`#${channel}`).then(() => {
             return;
@@ -52,15 +52,19 @@ const twitchBot: TwitchBot = module.exports = {
             return;
         })
     },
-    addListener: (action: ChatListener) => {
+    leaveChannel(channel: string){
+        if (twitchBot.client.channels.indexOf(`#${channel}`) !== -1) return;
+        twitchBot.client.part(`#${channel}`);
+    },
+    addListener(action: ChatListener){
         const newID = uuid.v4();
         twitchBot.messageHandlers.set(newID, action);
         return newID;
     },
-    removeEvent: (id: string) => {
+    removeEvent(id: string){
         twitchBot.messageHandlers.delete(id)
     },
-    handleMessage: (channel: string, tags: any, message: string, self: any) => {
+    handleMessage(channel: string, tags: any, message: string, self: any){
         if (self) { return; } // Ignore messages from the bot
         let commands: Array<string>, commandName: string;
         try {

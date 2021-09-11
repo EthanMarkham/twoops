@@ -36,7 +36,7 @@ interface HitBoxPositions {
 
 export default function Hoop(_props: any) {
     const { nodes, materials } = useGLTF("/assets/models/hoopModel.glb") as GLTFResult;
-    const roundOverTrigger: boolean = useStore(state => state.roundInfo.roundOverTrigger);
+    const resultsRequested: boolean = useStore(state => state.roundInfo.results.requested);
     const hoopPosition = useStore(state => state.roundInfo.hoopLocation);
 
     const setResults = useStore(state => state.setResults);
@@ -101,11 +101,11 @@ export default function Hoop(_props: any) {
 
     const trackHits = useCallback(time => {
         if (hitTop) {
-            setBottomHitTime(time);
+            setHitTopHitTime(time);
             setHitTop(false);
         }
         else if (hitBottom) {
-            setHitTopHitTime(time);
+            setBottomHitTime(time);
             setHitBottom(false);
         }
     }, [hitTop, hitBottom]);
@@ -122,13 +122,13 @@ export default function Hoop(_props: any) {
     useEffect(moveHitBoxes, [moveHitBoxes]);
 
     useEffect(() => {
-        if (roundOverTrigger) {
+        if (resultsRequested) {
             setResults({
                 success: topHitTime !== 0 && bottomHitTime !== 0 && topHitTime < bottomHitTime,
                 isAirball: isAirball
             });
         }
-    }, [roundOverTrigger, topHitTime, bottomHitTime, isAirball])
+    }, [resultsRequested, topHitTime, bottomHitTime, isAirball])
 
 
     /*

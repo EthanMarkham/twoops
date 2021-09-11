@@ -1,28 +1,6 @@
 import { ObjectId } from "mongodb";
 import { Triplet } from '@react-three/cannon';
-
-//can I share interface between client and server?
-export interface Limits{
-    MIN: number, 
-    MAX: number
-}
-
-export interface Boundries{
-    x: Limits,
-    y: Limits,
-    z: Limits
-}
-
-export interface ChatSettings {
-    responseEnabled: boolean,
-    delay: number,
-    shotAcknowledged: string,
-    bucketResponse: string,
-    brickResponse: string,
-    airballResponse: string,
-    inProgressMessage: string,
-    firstTryMessage: string,
-}
+import { Boundries, ChatSettings } from "../types/game";
 
 export default class GameSetting {
     constructor(
@@ -55,5 +33,4 @@ export default class GameSetting {
         },
         public _id?: ObjectId
     ) { }
-
 }

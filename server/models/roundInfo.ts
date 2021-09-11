@@ -1,20 +1,7 @@
 import { ObjectId } from "mongodb";
-import { ShotResult } from "../modules/gameManager";
 import { Triplet } from '@react-three/cannon';
-import { Boundries, Limits } from "./gameSettings";
-
-
-const getRandomInt = (limits: Limits) => {
-    return Math.floor(Math.random() * (limits.MAX - limits.MIN)) + limits.MIN
-}
-
-export const getRandomPosition = (boundries: Boundries): Triplet => {
-    return [
-        getRandomInt(boundries.x),
-        getRandomInt(boundries.y),
-        getRandomInt(boundries.z)
-    ]
-}
+import { Boundries, ShotResult } from "../types/game";
+import { getRandomPosition } from '../utils';
 
 export default class RoundInfo {
     hoopLocation: Triplet;

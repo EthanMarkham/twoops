@@ -13,11 +13,11 @@ interface RoundInfo {
         isThrown: boolean,
     },
     results: {
+        requested: boolean,
         isAirball: boolean,
         success: boolean,
         showing: boolean,
     },
-    roundOverTrigger: boolean
 }
 interface SettingsInfo {
     channel: string,
@@ -39,8 +39,7 @@ export interface Store {
     getGameData: () => void,
     setShot: (user: string, value: Triplet) => void,
     setResults: (data: ResultMessage) => void,
-    triggerNewRound: () => void,
-    logResult: () => void,
+    requestResults: () => void,
 }
 
 export enum Page {
@@ -69,11 +68,11 @@ const DEFAULTS: {
         },
         hoopLocation: [0, 0, -500],
         results: {
+            requested: false,
             showing: false,
             isAirball: true,
             success: false,
         },
-        roundOverTrigger: false,
     },
 }
 
@@ -123,37 +122,33 @@ const useStore = create<Store>((set, get) => ({
                 }
             });
     },
-    setResults: ({ success, isAirball }) => set(state => ({
-        ...state,
-        roundInfo: {
-            ...state.roundInfo,
-            results: {
-                showing: true,
-                isAirball: isAirball,
-                success: success,
-            }
+    setResults: ({ success, isAirball }) => {
+        const copy: Store = get();
+        const shotBody = {
+            user: copy.roundInfo.shot.user,
+            throw: copy.roundInfo.shot.throwValues,
+            result: success ? "SUCCESS" : isAirball ? "AIRBALL" : "BRICK",
+        }
 
-        }
-    })),
-    triggerNewRound: () => set(state => ({
-        ...state,
-        roundInfo: {
-            ...state.roundInfo,
-            roundOverTrigger: true,
-        }
-    })),
-    logResult: () => {
-        let copy: Store = get();
+        set(state => ({
+            ...state,
+            roundInfo: {
+                ...state.roundInfo,
+                results: {
+                    requested: false,
+                    showing: true,
+                    isAirball: isAirball,
+                    success: success,
+                }
+            }
+        }))
+
         fetch('/api/logShot', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                user: copy.roundInfo.shot.user,
-                throw: copy.roundInfo.shot.throwValues,
-                result: copy.roundInfo.results.success ? "SUCCESS" : copy.roundInfo.results.isAirball ? "AIRBALL" : "BRICK",
-            })
+            body: JSON.stringify(shotBody)
         })
             .then(response => response.json())
             .then(data => {
@@ -168,7 +163,17 @@ const useStore = create<Store>((set, get) => ({
                     }
                 }))
             })
-    }
+    },
+    requestResults: () => set(state => ({
+        ...state,
+        roundInfo: {
+            ...state.roundInfo,
+            results: {
+                ...state.roundInfo.results,
+                requested: true,
+            }
+        }
+    })),
 }))
 
 export default useStore;

@@ -8,8 +8,8 @@ import HTTP from 'http'
 import { SocketAPI } from './modules/webSocket'
 import { TwitchBot } from './modules/twitchBot'
 import { App } from '../client/app'
-import { MongoAPI } from './modules/mongoAPI'
-import { GameManager } from './modules/gameManager'
+import { GameManager } from './types/game'
+import { MongoAPI } from './types/mongo'
 
 require('dotenv').config()
 
@@ -18,6 +18,14 @@ const http = new HTTP.Server(server);
 const passport = require('passport');
 const OAuth2Strategy = require('passport-oauth').OAuth2Strategy;
 const request = require('request');
+const gameAPI = require('./routes/game');
+
+const manifest = fs.readFileSync(
+  path.join(__dirname, 'static/manifest.json'),
+  'utf-8'
+);
+
+const assets = JSON.parse(manifest);
 
 server.set('view engine', 'ejs');
 server.set('views', path.join(__dirname, 'views'));
@@ -25,10 +33,10 @@ server.set('views', path.join(__dirname, 'views'));
 server.use(express.json());
 server.use('/', express.static(path.join(__dirname, 'static')))
 server.use(express.urlencoded({ extended: true }));
-//SERVICES 
+
 
 //db connection
-const mongoAPI: MongoAPI = require('./modules/mongoApi');
+const mongoAPI: MongoAPI = require('./modules/mongo');
 mongoAPI.init();
 
 //websocket
@@ -40,7 +48,7 @@ const twitchBot: TwitchBot = require('./modules/twitchBot');
 twitchBot.init();
 
 //GAME MANAGER
-const gameManager: GameManager = require('./modules/gameManager');
+const gameManager: GameManager = require('./modules/game');
 gameManager.addListeners();
 
 //TWITCH AUTH
@@ -78,7 +86,6 @@ passport.deserializeUser(function (user: any, done: any) {
 });
 
 const callbackURL = process.env.SERVER_URL + "/auth/twitch/callback";
-console.log(callbackURL);
 
 passport.use('twitch', new OAuth2Strategy({
   authorizationURL: 'https://id.twitch.tv/oauth2/authorize',
@@ -91,33 +98,15 @@ passport.use('twitch', new OAuth2Strategy({
   function (accessToken: string, refreshToken: string, profile: any, done: any) {
     profile.accessToken = accessToken;
     profile.refreshToken = refreshToken;
-
-    // Securely store user profile in your DB
-    //User.findOrCreate(..., function(err, user) {
-    //  done(err, user);
-    //});
-
     done(null, profile);
   }
 ));
 
-// Set route to start OAuth link, this is where you define scopes to request
 server.get('/auth/twitch', passport.authenticate('twitch', { scope: 'user_read' }));
 
-// Set route for OAuth redirect
 server.get('/auth/twitch/callback', passport.authenticate('twitch', { successRedirect: '/', failureRedirect: '/' }));
 
-//API
-const apiRouter = require('./routes/game');
-server.use('/api', apiRouter);
-
-
-//VIEW RENDERS
-const manifest = fs.readFileSync(
-  path.join(__dirname, 'static/manifest.json'),
-  'utf-8'
-);
-const assets = JSON.parse(manifest);
+server.use('/api', gameAPI);
 
 server.get('/', (req: any, res: any) => {
   if (req.session && req.session.passport && req.session.passport.user) {

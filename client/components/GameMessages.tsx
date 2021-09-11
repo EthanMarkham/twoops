@@ -14,31 +14,32 @@ interface GameMessage {
     text: string,
 }
 
+const getMessage = (isShowing: boolean, user: string | null, success: boolean, isAirball: boolean): GameMessage => ({
+    showing: isShowing,
+    user: user ? user : "",
+    state: success ? WIN : isAirball ? AIRBALL : BRICK,
+    text: success ? "NICE" : isAirball ? "OOOOOOOOF!" : "CLONK!",
+})
+
 const GameMessages = (props: any) => {
     const user = useStore(state => state.roundInfo.shot.user);
     const { success, isAirball, showing } = useStore(state => state.roundInfo.results);
     const attempts = useStore(state => state.roundInfo.attempts);
-    const [isShowing, setShowing] = useState<boolean>(false);
-    
+
+    const [message, setMessage] = useState<GameMessage>(getMessage(false, "", false, false));
+
     useEffect(() => {
         if (showing) {
-            setShowing(true);
-            setTimeout(() => setShowing(false), 5000);
+            setMessage(getMessage(true, user, success, isAirball));
+            setTimeout(() => setMessage(getMessage(false, "", false, false)), 5000);
         }
-    }, [showing])
+    }, [showing, user, success, isAirball])
 
-    const message: GameMessage = useMemo<GameMessage>(() => ({
-        showing: isShowing,
-        user: user ? user : "",
-        state: success ? WIN : isAirball ? AIRBALL : BRICK,
-        text: success ? "NICE" : isAirball ? "OOOOOOOOF!" : "CLONK!",
-    }), [isAirball, user, success, isShowing]);
 
     const messageTransition = useTransition(message, {
         from: { opacity: 0 },
         enter: item => ({ opacity: 1, transform: `scale(${item && item.state === WIN ? 2 : 1})`, top: !!item && item.state === WIN ? '200px' : '50px' }),
         leave: { opacity: 0 },
-        delay: 500,
         config: config.molasses
     });
 

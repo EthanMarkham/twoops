@@ -1,11 +1,11 @@
-import { GameManager, RoundResponse, SettingsResponse, ShotResult } from "../modules/gameManager";
 import { TwitchBot } from "../modules/twitchBot";
+import { GameManager, ShotResult } from "../types/game";
 
 require('dotenv').config();
 
 const express = require('express');
 const router = express.Router();
-const gameManager: GameManager = require('../modules/gameManager');
+const gameManager: GameManager = require('../modules/game');
 const twitchBot: TwitchBot = require('../modules/twitchBot');
 
 //routes
@@ -14,9 +14,9 @@ router.get("/init", verifyUser, async (req: any, res: any) => {
     twitchBot.joinChannel(req.session.passport.user.data[0].login); //join twitch chat for user
 
     gameManager.getAggregatedData(req.session.passport.user.data[0].login)
-        .then(({ settings, roundInfo, newUser }) => {
+        .then(({ settings, roundInfo, newData }) => {
             return res.json({
-                newSettings: newUser,
+                newSettings: newData,
                 ballsSpawn: settings.ballSpawn,
                 alphaChannel: settings.alphaChannel,
                 channel: settings.channel,

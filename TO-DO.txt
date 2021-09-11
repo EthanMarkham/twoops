@@ -1,7 +1,8 @@
 IMPORTANT
--fix hitboxes
+-fix hitboxes FUCKED UP
+-add remove from twitch bot on socket off
 -add settings page
-
+-fade out hoop when not in use.
 
 IDEAS
 -multiple shots at once? random ball spawn location? 

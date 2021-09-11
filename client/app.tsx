@@ -20,15 +20,10 @@ interface GameDataResponse {
 export const App: React.FC = () => {
     const page = useStore(state => state.pageIndex);
     const init = useStore(state => state.getGameData);
-    const logResult = useStore(state => state.logResult);
-    const roundOverTrigger = useStore(state => state.roundInfo.roundOverTrigger);
 
     //get data
     useEffect(init, [])
-    useEffect(() => { 
-        if (roundOverTrigger) logResult(); 
-    }, [roundOverTrigger])
-
+    
     const renderPage = (page: Page) => {
         switch (page) {
             case Page.LOADING:

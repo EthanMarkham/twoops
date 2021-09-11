@@ -38,14 +38,14 @@ type GLTFResult = GLTF & {
 
 const Ball = (_props: any) => {
     const { nodes, materials } = useGLTF("/assets/models/ballModel.glb") as GLTFResult;
-    const triggerNewRound = useStore(state => state.triggerNewRound);
-    const [newRoundTriggered, setNewRoundTriggered] = useState<boolean>(false);
+
+    const [resultsRequested, setResultsRequested] = useState<boolean>(false);
+    const [inProgress, setInProgress] = useState<boolean>(false);
 
     const settings = useStore(state => state.settings);
     const { user, throwValues } = useStore(state => state.roundInfo.shot);
     const { id, attempts } = useStore(state => state.roundInfo);
-
-    const [inProgress, setInProgress] = useState<boolean>(false);
+    const requestResults = useStore(state => state.requestResults);
 
     const [ref, api] = useSphere(() => ({
         mass: 1,
@@ -63,18 +63,18 @@ const Ball = (_props: any) => {
 
     useEffect(() => {
         const subscription = api.position.subscribe((pos) => {
-            if (pos[1] < 0 && !newRoundTriggered) {
-                setNewRoundTriggered(true);
-                triggerNewRound();
+            if (pos[1] < 0 && !resultsRequested && inProgress) {
+                requestResults();
+                setResultsRequested(true);
             }
         });
         return () => subscription();
-    }, [newRoundTriggered, api])
+    }, [resultsRequested, api, inProgress])
 
     //reset ball when roundID changes
     useEffect(() => {
         setTimeout(() => {
-            setNewRoundTriggered(false);
+            setResultsRequested(false);
             setInProgress(false);
             api.velocity.set(0, 0, 0);
             api.angularVelocity.set(0, 0, 0);

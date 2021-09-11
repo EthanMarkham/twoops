@@ -18,7 +18,7 @@ export interface SocketAPI {
 const socketAPI: SocketAPI = module.exports = {
     io: null,
     listeners: new Map<string, SocketListener>(),
-    init: (server: HTTPServer) => {
+    init(server: HTTPServer){
         socketAPI.io = new Server(server, {
             cors: {
                 origin: "*",
@@ -34,10 +34,12 @@ const socketAPI: SocketAPI = module.exports = {
             })
         })
     },
-    addListener: (listener: SocketListener) => {
+    addListener(listener: SocketListener){
         const newID = uuidv4();
         socketAPI.listeners.set(newID, listener);
         return newID;
     },
-    removeListener: (id: string) => socketAPI.listeners.delete(id),
+    removeListener(id: string){ 
+        socketAPI.listeners.delete(id); 
+    },
 }
