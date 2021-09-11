@@ -7,7 +7,7 @@ export interface Limits{
     MAX: number
 }
 
-export interface Boundries{
+export interface Boundaries {
     x: Limits,
     y: Limits,
     z: Limits
@@ -27,7 +27,7 @@ export interface ChatSettings {
 export default class GameSetting {
     constructor(
         public channel: string,
-        public hoopsSpawn: Boundries =  {
+        public hoopsSpawn: Boundaries =  {
             x: {
                 MIN: -15,
                 MAX: 30
