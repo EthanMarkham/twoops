@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { animated } from 'react-spring';
+import SettingsSVG from '../svgComponents/SettingsSVG';
 
 export const PageHolder = styled("div") <{
     flex?: boolean,
@@ -42,4 +43,11 @@ export const Img = styled("img") <{
 export const AnimatedWrapper = styled(animated.div)`
     width: fit-content;
     height: fit-content;
+`
+
+export const SettingsLogo = styled(SettingsSVG)`
+    position: fixed;
+    width: 40px;
+    bottom: 30px;
+    left: 5%;
 `

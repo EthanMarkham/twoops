@@ -94,35 +94,35 @@ const gameManager: GameManager = module.exports = {
             if (!shot) throw new Error("Missing shot info");
             gameManager.getAggregatedData(channel)
                 .then(({ settings, roundInfo }) => {
-                    
+                    //DELAY GAME IN TWITCH CHAT DURING STREAM DELAY
                     gameManager.delayedGames.push(channel);
-
                     setTimeout(() => {
                         twitchBOT.say(getResponseMessage(settings.chat, roundInfo, shot), channel);
                         const index = gameManager.delayedGames.indexOf(channel);
                         if (index > -1) gameManager.delayedGames = gameManager.delayedGames.splice(index, 1);
                     }, settings.chat.delay);
 
+
                     if (shot.result == "SUCCESS") {
                         const newRound = new RoundInfo(channel, settings.hoopsSpawn);
-
                         mongoAPI.db && mongoAPI.db.collection(process.env.ROUND_COLLECTION_NAME || 'roundinfo').updateOne(
                             { channel: channel, isComplete: false },
                             {
                                 $push: { shots: shot },
-                                $set: { isComplete: true },
-                                $unset: { inProgress: 1 }
+                                $set: { isComplete: true, inProgress: false },
                             }
-                        );
-                        mongoAPI.db && mongoAPI.db.collection(process.env.ROUND_COLLECTION_NAME || 'roundinfo').insertOne(newRound)
+                        ).then(() => {
+                            mongoAPI.db && mongoAPI.db.collection(process.env.ROUND_COLLECTION_NAME || 'roundinfo').insertOne(newRound)
                             .then(result => {
                                 resolve({
-                                    hoopPosition: roundInfo.hoopLocation,
+                                    hoopPosition: newRound.hoopLocation,
                                     attempts: 0,
                                     roundID: result.insertedId
                                 });
                             })
+                        })
                     }
+
                     else {
                         mongoAPI.db && mongoAPI.db.collection(process.env.ROUND_COLLECTION_NAME || 'roundinfo').updateOne(
                             { channel: channel, isComplete: false },
@@ -131,6 +131,7 @@ const gameManager: GameManager = module.exports = {
                                 $set: { inProgress: false }
                             }
                         );
+
                         resolve({
                             hoopPosition: roundInfo.hoopLocation,
                             attempts: roundInfo.shots.length + 1,

@@ -43,10 +43,11 @@ export interface Store {
     socket: Socket,
     settings: SettingsInfo,
     roundInfo: RoundInfo,
+    lastShot: Date,
     error: null | Error,
     getGameData: () => void,
     setShot: (user: string, value: Triplet) => void,
-    setResults: (data: ResultMessage) => void,
+    setResults: (data: ResultMessage, callback: () => void) => void,
     requestResults: () => void,
 }
 
@@ -82,9 +83,11 @@ const useStore = create<Store>((set, get) => ({
     socket: socketIO("/", { autoConnect: true, reconnectionDelayMax: 10000 }),
     roundInfo: DEFAULTS.ROUND,
     settings: DEFAULTS.SETTINGS,
+    lastShot: new Date(),
     error: null,
     setShot: (user, value) => set(state => ({
         ...state,
+        lastShot: new Date(),
         roundInfo: {
             ...state.roundInfo,
             shot: {
@@ -123,7 +126,7 @@ const useStore = create<Store>((set, get) => ({
                 }
             });
     },
-    setResults: ({ success, isAirball }) => {
+    setResults: ({ success, isAirball }, callback) => {
         const copy: Store = get();
         fetch('/api/logShot', {
             method: 'POST',
@@ -139,6 +142,7 @@ const useStore = create<Store>((set, get) => ({
             .then(response => response.json())
             .then(data => {
                 console.log('logged response', data)
+                callback();
                 set(state => ({
                     ...state,
                     roundInfo: {

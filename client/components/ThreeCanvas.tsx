@@ -3,7 +3,7 @@ import useStore from '../store';
 import { Canvas } from '@react-three/fiber';
 import { Physics, Triplet } from '@react-three/cannon';
 import Environment from './Enviroment';
-import Ball from './Ball';
+import Ball from './BallLowPoly';
 import Hoop from './Hoop';
 import { Socket } from 'socket.io-client';
 import { ShotInfo } from '../../server/types/game';

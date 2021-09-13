@@ -36,149 +36,90 @@ const offsetTriplet: (current: Triplet, offset: Triplet) => Triplet = (current, 
 
 export default function Hoop(_props: any) {
     const { nodes, materials } = useGLTF("/assets/models/hoopModel.glb") as GLTFResult;
+
+    const [isResponding, setRespondingStatus] = useState<boolean>(false);
     const resultsRequested: boolean = useStore(state => state.roundInfo.results.requested);
     const hoopPosition = useStore(state => state.roundInfo.hoopLocation);
-
     const setResults = useStore(state => state.setResults);
 
-    const hoop = useRef();
+    const [topHit, setTopHit] = useState<number>(0);
+    const [bottomHit, setBottomHit] = useState<number>(0);
+    const [hitHoop, setHitHoop] = useState<boolean>(false);
 
-    const [isAirball, setAirball] = useState<boolean>(true);
+    const results = useMemo(() => ({
+        success: !!(topHit !== 0 && bottomHit !== 0 && topHit < bottomHit),
+        isAirball: !hitHoop,
+    }), [topHit, bottomHit, hitHoop]);
 
-    const [hitTop, setHitTop] = useState<boolean>(false);
-    const [topHitTime, setHitTopHitTime] = useState<number>(0);
+    //do i need to promise to ensure it runs in order?
+    //push results up state when requested. is there better pattern for this?
+    useEffect(() => {
+        if (resultsRequested && !isResponding) {
+            setRespondingStatus(true);
+            setResults(results, () => {
+                setTopHit(0);
+                setBottomHit(0);
+                setRespondingStatus(false);
+                setHitHoop(false);
+            });
+        }
+    }, [resultsRequested, results, isResponding]);
 
-    const [hitBottom, setHitBottom] = useState<boolean>(false);
-    const [bottomHitTime, setBottomHitTime] = useState<number>(0);
-
-    //memotize hitbox positions
+    //memotize hitbox positions to move whenever hoop does. Again probably way stuff I could do.
     const hitbox: HitBoxPositions = useMemo<HitBoxPositions>(() => ({
         top: offsetTriplet([nodes.BasketTrigger_1.position.x, nodes.BasketTrigger_1.position.y, nodes.BasketTrigger_1.position.z], hoopPosition),
         bottom: offsetTriplet([nodes.BasketTrigger_2.position.x, nodes.BasketTrigger_2.position.y, nodes.BasketTrigger_2.position.z], hoopPosition),
         main: offsetTriplet([nodes.HitBox.position.x, nodes.HitBox.position.y, nodes.HitBox.position.z], hoopPosition),
     }), [hoopPosition, nodes]);
 
+    //I THINK I AM ABLE SUPPOSED TO GROUP THESE INTO COMPLEX SHAPE??? 
 
     //collison box for hoop
-    const [, hoopAPI] = useTrimesh(() => {
-        let posArray = nodes.HitBox.geometry!.attributes!.position!.array || [0, 0, 0] as ArrayLike<number>
-        let indexArray = nodes.HitBox.geometry!.index!.array || [0, 0, 0] as ArrayLike<number>
-        return {
-            type: "Static",
-            position: hitbox.main,
-            mass: 1,
-            onCollide: () => setAirball(false),
-            args: [posArray, indexArray],
-            material: { friction: 1, restitution: 0.2 },
-        }
-    });
+    const [, hoopAPI] = useTrimesh(() => ({
+        type: "Static",
+        position: hitbox.main,
+        mass: 1,
+        onCollide: () => setHitHoop(true),
+        args: [
+            nodes.HitBox.geometry!.attributes!.position!.array || [0, 0, 0] as ArrayLike<number>,
+            nodes.HitBox.geometry!.index!.array || [0, 0, 0] as ArrayLike<number>
+        ],
+        material: { friction: 1, restitution: 0.2 },
+    }));
 
     //top hit collision tracker
-    const [, topBucketAPI] = useTrimesh(() => {
-        let posArray = nodes.BasketTrigger_1!.geometry!.attributes!.position!.array || [0, 0, 0] as ArrayLike<number>
-        let indexArray = nodes.BasketTrigger_1!.geometry!.index!.array || [0, 0, 0] as ArrayLike<number>
-        return {
-            type: "Static",
-            position: hitbox.top,
-            collisionResponse: 0,
-            onCollide: () => setHitTop(true),
-            args: [posArray, indexArray],
-        }
-    });
+    const [, topBucketAPI] = useTrimesh(() => ({
+        type: "Static",
+        position: hitbox.top,
+        collisionResponse: 0,
+        onCollide: () => setTopHit(new Date().getTime()),
+        args: [
+            nodes.BasketTrigger_1!.geometry!.attributes!.position!.array || [0, 0, 0] as ArrayLike<number>,
+            nodes.BasketTrigger_1!.geometry!.index!.array || [0, 0, 0] as ArrayLike<number>
+        ],
+    }));
 
     //bottom hit collision tracker
-    const [, bottomBucketAPI] = useTrimesh(() => {
-        let posArray = nodes.BasketTrigger_2!.geometry!.attributes!.position!.array || [0, 0, 0] as ArrayLike<number>
-        let indexArray = nodes.BasketTrigger_2!.geometry!.index!.array || [0, 0, 0] as ArrayLike<number>
-        return {
-            type: "Static",
-            position: offsetTriplet(hitbox.bottom, [0, -2, 0]),
-            collisionResponse: 0,
-            onCollide: () => setHitBottom(true),
-            args: [posArray, indexArray]
-        }
-    });
+    const [, bottomBucketAPI] = useTrimesh(() => ({
+        type: "Static",
+        position: offsetTriplet(hitbox.bottom, [0, -2, 0]),
+        collisionResponse: 0,
+        onCollide: () => setBottomHit(new Date().getTime()),
+        args: [
+            nodes.BasketTrigger_2!.geometry!.attributes!.position!.array || [0, 0, 0] as ArrayLike<number>,
+            nodes.BasketTrigger_2!.geometry!.index!.array || [0, 0, 0] as ArrayLike<number>
+        ]
+    }));
 
-    const trackHits = useCallback(time => {
-        if (hitTop) {
-            setHitTopHitTime(time);
-            setHitTop(false);
-        }
-        else if (hitBottom) {
-            setBottomHitTime(time);
-            setHitBottom(false);
-        }
-    }, [hitTop, hitBottom]);
-
-    useFrame(({ clock }) => trackHits(clock.elapsedTime));
-
-    const moveHitBoxes = useCallback(() => {
-        hoopAPI.position.set(...hitbox.main);
-        topBucketAPI.position.set(...hitbox.top);
-        bottomBucketAPI.position.set(...offsetTriplet(hitbox.bottom, [0, -2, -0]));
-    }, [hitbox, hoopAPI.position.set, topBucketAPI.position.set, bottomBucketAPI.position.set])
-
-
-    useEffect(moveHitBoxes, [moveHitBoxes]);
-
+    //SET NEW HITBOX POSITIONS WITH API WHEN HOOP MOVES
     useEffect(() => {
-        if (resultsRequested) {
-            setResults({
-                success: topHitTime !== 0 && bottomHitTime !== 0 && topHitTime < bottomHitTime,
-                isAirball: isAirball
-            });
-        }
-    }, [resultsRequested, topHitTime, bottomHitTime, isAirball])
-
-
-    /*
-       
-    
-        const [hitTop, setHitTop] = useState(false);
-        const [hitBottom, setHitBottom] = useState(false);
-        const [hitTime, setHitTime] = useState({ top: 0, bottom: 0 });
-    
-        const bucket = useMemo(() => hitTime.top !== 0 && hitTime.bottom !== 0 && hitTime.top < hitTime.bottom, [hitTime]);
-    
-
-    
-        //bucket detection
-        
-    
-        const registerHits = useCallback(time => {
-            if (hitTop) {
-                console.log('setting top hit to', time)
-                setHitTime(cur => ({ ...cur, top: time }));
-                setHitTop(false);
-            }
-            else if (hitBottom) {
-                console.log('setting bottom hit to', time)
-                setHitTime(cur => ({ ...cur, bottom: time }));
-                setHitBottom(false);
-            }
-        }, [hitTop, hitBottom, setHitTime]);
-    
-        //airball detection
-        //const setNotAirball = useCallback(() => isAirball && setAirball(false), [isAirball, setAirball])
-    
-        //move hitboxes with hoop
-        useEffect(() => console.log(hoopPosition), [hoopPosition])
-    
-        useEffect(() => api.position.set(...hitboxPos), [hitboxPos, api.position]);
-    
-        useEffect(() => topBucketAPI.position.set(...topTrigger), [topTrigger, topBucketAPI.position]);
-    
-        useEffect(() => bottomBucketAPI.position.set(...offsetTriplet(lowerTrigger, [0, -2, -0])), [lowerTrigger, bottomBucketAPI.position]);
-    
-        //seEffect(() => { if (bucket) setResult(true) }, [bucket, setResult]);
-    
-    
-        //check hit boxes on each frame
-        useFrame(({ clock }) => registerHits(clock.elapsedTime));
-    */
+        hoopAPI.position.set(...hitbox.main);
+        topBucketAPI.position.set(...offsetTriplet(hitbox.top, [0, 3, -0]));
+        bottomBucketAPI.position.set(...offsetTriplet(hitbox.bottom, [0, -2, -0]));
+    }, [hitbox]);
 
     return (
-        <group ref={hoop} position={hoopPosition}>
+        <group position={hoopPosition}>
             <mesh
                 castShadow
                 receiveShadow
@@ -206,7 +147,7 @@ export default function Hoop(_props: any) {
         </group>
     )
 }
-/*
+/* HIT BOX MESH FOR DEBUG
 
 
                         <mesh

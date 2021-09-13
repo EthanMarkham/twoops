@@ -1,37 +1,50 @@
 import styled from 'styled-components';
 import { animated } from 'react-spring';
+import BucketSVG from '../svgComponents/BucketSVG';
+import AirballSVG from '../svgComponents/AirballSVG';
+import BrickSVG from '../svgComponents/BrickSVG';
 
 export const InfoBox = styled.div`
     z-index: 5;
-    padding: 5px;
-    position: absolute;
-
-    z-index: 5;
     top: 5px;
     right: 5%;
-    padding: 10px 0px;
     width: 230px;
     height: 160px;
+    position: absolute;
 
-    filter: drop-shadow(0px 0px 9px #BCBCBC30);
+    display: grid;
+    grid-template-rows: 40%  20 40%;
+    grid-template-columns: 50% 50%;
+    justify-content: center;
+    gap: 2px;
+
+    color: #FFFFFF;
+    -webkit-text-stroke-color: black;
 `
-export const RoundInfo = styled.img`
-    position: absolute;
-    width: 60%;
-    right: 0;
+export const ShotLabel = styled.div`
+    font-size: 2.83rem;
+    -webkit-text-stroke-width: 2px;
+    grid-row-start: 1;
+    grid-column-start: 2;
+    padding-top: 20px;
 `
-export const AttemptCount = styled.div`
+export const BucketLabel = styled(animated.div)`
+    grid-row-start: 3;
+    grid-column-start: 2;
+`
+export const BucketFiller = styled(animated.div)`
+    grid-row-start: 2;
+    grid-column-start: 2;
+`
+export const AttemptCount = styled(animated.div)`
     z-index: 6;
-    position: absolute;
-    top: 4%;
-    right: 50%;
     text-align: right;
     font-size: 8.5rem;
-    display: flex;
     letter-spacing: 0.01em;
-    color: #FFFFFF;
     -webkit-text-stroke-width: 3px;
-    -webkit-text-stroke-color: black;
+    grid-row-start: 1;
+    grid-row-end: 4;
+    grid-column-start: 1;
 `
 export const MessageBox = styled(animated.div)`
     padding: 5px;
@@ -45,16 +58,26 @@ export const MessageBox = styled(animated.div)`
 
     //border: 1px solid black;
 `
-
-export const SvgHolder = styled('img')<{
-    isBucket?: boolean
-}>`
+export const Bucket = styled(BucketSVG)`
     position: relative;
     width: 80%;
-    bottom: ${props => props.isBucket ? `70px;` : `30px;`}
+    bottom: 70px;
     left: 10%;
 `
 
+export const Airball = styled(AirballSVG)`
+    position: relative;
+    width: 80%;
+    bottom: 30px;
+    left: 10%;
+`
+
+export const Brick = styled(BrickSVG)`
+    position: relative;
+    width: 80%;
+    bottom: 30px;
+    left: 10%;
+`
 export const MessageText = styled("div") <{
     response: string
 }>`
@@ -83,7 +106,7 @@ export const MessageText = styled("div") <{
         
         -webkit-text-stroke-width: 1.8px;
         -webkit-text-stroke-color: black;
-        text-shadow: ${props => props.response === "AIRBALL" ? '0px 0px 9px #99D4FF' : props.response === "WIN" ? '0px 0px 9px #FFBC00' : '0px 0px 9px #F86542'};
+        text-shadow: ${({ response }) => response === "WIN" ? '0px 0px 9px #FFBC00' : response === "AIRBALL" ? '0px 0px 9px #99D4FF' : '0px 0px 9px #F86542'};
     }
 `
 

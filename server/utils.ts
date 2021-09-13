@@ -23,6 +23,7 @@ export const getShot = (user: string, commands: string[]): ShotInfo | false => {
         let y = parseFloat(commands[2]);
         let z = parseFloat(commands[3]);
         if (x === NaN || y == NaN || z == NaN) return false;
+        if (0 > x || x > 100 || 0 > y || y > 100 || 0 > z || z > 100) return false;
         return {
             user: user,
             shot: shotConverter([x, y, z], shotConversions)

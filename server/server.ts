@@ -16,7 +16,7 @@ require('dotenv').config()
 const server = express()
 const http = new HTTP.Server(server);
 const passport = require('passport');
-const OAuth2Strategy = require('passport-oauth').OAuth2Strategy;
+const { OAuth2Strategy } = require('passport-oauth');
 const request = require('request');
 const gameAPI = require('./routes/game');
 

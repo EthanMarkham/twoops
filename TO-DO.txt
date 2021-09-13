@@ -1,8 +1,14 @@
+REDUCE SVG AND BALL GLB
+
 IMPORTANT
--fix hitboxes FUCKED UP
--add remove from twitch bot on socket off
+-fix hitboxes
 -add settings page
 -fade out hoop when not in use.
 
+BUGS
+
+ --ball reloading on first spawn? small but needs fixing
+
 IDEAS
+
 -multiple shots at once? random ball spawn location? 

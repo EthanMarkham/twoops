@@ -29,6 +29,7 @@ router.get("/init", verifyUser, async (req: any, res: any) => {
 
 router.post("/logShot", verifyUser, async (req: any, res: any) => {
     let shotResult: ShotResult = req.body;
+    console.log('logging shot for ', shotResult)
     gameManager.logResult(req.session.passport.user.data[0].login, shotResult)
     .then(response => {
         return res.json(response);
