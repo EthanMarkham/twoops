@@ -1,130 +1,129 @@
 html,
 body,
 #root,
-#root>div {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  overflow: hidden;
-  background: linear-gradient(180deg, #000000 0%, #212121 100%);
+#root > div {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    background: linear-gradient(180deg, #000000 0%, #212121 100%);
 }
 
 .flexRow {
-  display: flex;
-  flex-direction: row;
+    display: flex;
+    flex-direction: row;
 }
 
 #sideBar {
-  height: 100%;
-  flex-basis: 28%;
-  min-width: 400px;
+    height: 100%;
+    flex-basis: 28%;
+    min-width: 400px;
 
-  background: linear-gradient(0deg, #313131, #313131), #C4C4C4;
+    background: linear-gradient(0deg, #313131, #313131), #c4c4c4;
 
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: 26% auto 1fr;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 26% auto 1fr;
 }
 
 #sideBar > * {
-  color: #ffffff;
-  width: 80%;
-  margin-left: 10%;
-  height: 100%;
-  font-family: Ambient;
-  font-style: normal;
+    color: #ffffff;
+    width: 80%;
+    margin-left: 10%;
+    height: 100%;
+    font-family: Ambient;
+    font-style: normal;
 }
 
-#bucketsOverlayLogo{
-  grid-row-start: 1;
-  display: flex;
-  align-items: center;
+#bucketsOverlayLogo {
+    grid-row-start: 1;
+    display: flex;
+    align-items: center;
 }
 
-#bucketsOverlayLogo > img{
-  width: 158.78px;
-  height: 73.78px;
+#bucketsOverlayLogo > img {
+    width: 158.78px;
+    height: 73.78px;
 }
 
-#header{
-  grid-row-start: 2;
-  font-weight: bold;
-  font-size: 42px;
+#header {
+    grid-row-start: 2;
+    font-weight: bold;
+    font-size: 42px;
 }
 
-#info{
-  padding-top: 20px;
-  grid-row-start: 3;
-  display: flex;
-  flex-direction: column;
-  gap: 1vh;
-  padding-top: 100px;
+#info {
+    padding-top: 20px;
+    grid-row-start: 3;
+    display: flex;
+    flex-direction: column;
+    gap: 1vh;
+    padding-top: 100px;
 }
 
 #info > * {
-  width: 100%;
-  height: fit-content;
+    width: 100%;
+    height: fit-content;
 }
 
-#infoHeader{
-  font-weight: bold;
-  font-size: 30px;
-  padding-bottom: 10px;
+#infoHeader {
+    font-weight: bold;
+    font-size: 30px;
+    padding-bottom: 10px;
 }
 
-.infoItem{
-  width: 90%;
-  font-family: Open Sans;
-  font-style: normal;
-  font-weight: normal;
-  font-size: 18px;
+.infoItem {
+    width: 90%;
+    font-family: Open Sans;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 18px;
 }
 
-.infoItem:before{
-  display: inline-flex;
-  content: '';
-  background-image: url('/assets/svg/star.svg');
-  background-size: contain;
-  height: 100%;
-  width: 10%;
+.infoItem:before {
+    display: inline-flex;
+    content: "";
+    background-image: url("/assets/svg/star.svg");
+    background-size: contain;
+    height: 100%;
+    width: 10%;
 }
-
 
 #main {
-  display: flex;
-  height: 100%;
-  flex-grow: 1;
-  min-width: 400px;
+    display: flex;
+    height: 100%;
+    flex-grow: 1;
+    min-width: 400px;
 }
 
 #main > a {
-  width: auto;
-  height: auto;
-  margin: auto;
-  text-decoration: none;
+    width: auto;
+    height: auto;
+    margin: auto;
+    text-decoration: none;
 }
 
 #main > a > button {
-  width: 379.77px;
-  height: 75.46px;
+    width: 379.77px;
+    height: 75.46px;
 
-  color: #000000;
-  background: #FFCF11;
-  border-radius: 4px;
+    color: #000000;
+    background: #ffcf11;
+    border-radius: 4px;
 
-  font-family: Open Sans;
-  font-style: normal;
-  font-weight: bold;
-  font-size: 18px;
-  line-height: 100%;
+    font-family: Open Sans;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 18px;
+    line-height: 100%;
 
-  display: flex;
-  gap: 1em;
-  align-items: center;
-  justify-content: center;
-  text-transform: uppercase;
+    display: flex;
+    gap: 1em;
+    align-items: center;
+    justify-content: center;
+    text-transform: uppercase;
 }
 
-.highlight{
-  color: #FFCF11;
+.highlight {
+    color: #ffcf11;
 }

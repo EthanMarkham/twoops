@@ -1,13 +1,17 @@
-import { Triplet, useBox, usePlane } from '@react-three/cannon';
-import { useThree } from '@react-three/fiber';
-import React, { useEffect, useRef } from 'react';
+import { Triplet, useBox, usePlane } from "@react-three/cannon";
+import { useThree } from "@react-three/fiber";
+import React, { useEffect, useRef } from "react";
 
 interface EnvironmentProps {
-    ballPosition: Triplet
+    ballPosition: Triplet;
 }
 const Environment = ({ ballPosition }: EnvironmentProps) => {
-    const standPosition = useRef<Triplet>([ballPosition[0], ballPosition[1] - 2, ballPosition[2]] as Triplet);
-    
+    const standPosition = useRef<Triplet>([
+        ballPosition[0],
+        ballPosition[1] - 2,
+        ballPosition[2],
+    ] as Triplet);
+
     //Camera
     const { camera } = useThree();
     useEffect(() => {
@@ -22,7 +26,7 @@ const Environment = ({ ballPosition }: EnvironmentProps) => {
         material: {
             friction: 0,
             restitution: 1.4,
-        }
+        },
     }));
 
     //Stand
@@ -32,9 +36,9 @@ const Environment = ({ ballPosition }: EnvironmentProps) => {
         mass: 0,
         material: {
             friction: 0,
-            restitution: 0.01
-        }
-    }))
+            restitution: 0.01,
+        },
+    }));
 
     return (
         <group>
@@ -65,7 +69,7 @@ const Environment = ({ ballPosition }: EnvironmentProps) => {
                 scale={[2.83, 2.83, 2.83]}
             />
         </group>
-    )
-}
+    );
+};
 
 export default Environment;

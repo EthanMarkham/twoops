@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb";
-import { Triplet } from '@react-three/cannon';
+import { Triplet } from "@react-three/cannon";
 import { Boundries, ShotResult } from "../types/game";
-import { getRandomPosition } from '../utils';
+import { getRandomPosition } from "../utils";
 
 export default class RoundInfo {
     hoopLocation: Triplet;
@@ -12,7 +12,7 @@ export default class RoundInfo {
         public isComplete: boolean = false,
         public inProgress: boolean = false,
         public _id?: ObjectId
-    ) { 
+    ) {
         this.hoopLocation = getRandomPosition(boundries);
     }
 }

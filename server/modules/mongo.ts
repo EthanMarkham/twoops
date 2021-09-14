@@ -1,24 +1,42 @@
 import { MongoClient, Collection } from "mongodb";
-import { ENV, MongoAPI } from '../types/mongo';
+import { ENV, MongoAPI } from "../types/mongo";
 
-require('dotenv').config();
+require("dotenv").config();
 
-const {DB_CONN_STRING, DB_NAME, SETTINGS_COLLECTION_NAME, ROUND_COLLECTION_NAME}: ENV = (process.env) as unknown as ENV
+const {
+    DB_CONN_STRING,
+    DB_NAME,
+    SETTINGS_COLLECTION_NAME,
+    ROUND_COLLECTION_NAME,
+}: ENV = process.env as unknown as ENV;
 
-if (!DB_CONN_STRING || !DB_NAME || !SETTINGS_COLLECTION_NAME || !ROUND_COLLECTION_NAME) throw new Error('Missing DB connection settings. Check ENV vars.');
+if (
+    !DB_CONN_STRING ||
+    !DB_NAME ||
+    !SETTINGS_COLLECTION_NAME ||
+    !ROUND_COLLECTION_NAME
+)
+    throw new Error("Missing DB connection settings. Check ENV vars.");
 
-const mongoAPI: MongoAPI = module.exports = {
+const mongoAPI: MongoAPI = (module.exports = {
     client: new MongoClient(DB_CONN_STRING),
     db: null,
     collections: new Map<string, Collection>(),
-    init(){
+    init() {
         mongoAPI.client.connect().then(() => {
-            mongoAPI.db = mongoAPI.client.db(DB_NAME);  
+            mongoAPI.db = mongoAPI.client.db(DB_NAME);
             //add collections
-            mongoAPI.collections.set(ROUND_COLLECTION_NAME, mongoAPI.db.collection(ROUND_COLLECTION_NAME));
-            mongoAPI.collections.set(SETTINGS_COLLECTION_NAME, mongoAPI.db.collection(SETTINGS_COLLECTION_NAME));
-            console.log(`Successfully connected to database: ${mongoAPI.db.databaseName}`);
+            mongoAPI.collections.set(
+                ROUND_COLLECTION_NAME,
+                mongoAPI.db.collection(ROUND_COLLECTION_NAME)
+            );
+            mongoAPI.collections.set(
+                SETTINGS_COLLECTION_NAME,
+                mongoAPI.db.collection(SETTINGS_COLLECTION_NAME)
+            );
+            console.log(
+                `Successfully connected to database: ${mongoAPI.db.databaseName}`
+            );
         });
-    }
-}
-
+    },
+});

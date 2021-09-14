@@ -1,51 +1,52 @@
-import { useSphere } from '@react-three/cannon';
-import { useGLTF } from '@react-three/drei';
-import React, { useEffect, useState } from 'react';
-import useStore from '../store';
-import { Mesh, MeshStandardMaterial } from 'three';
-import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
-
+import { useSphere } from "@react-three/cannon";
+import { useGLTF } from "@react-three/drei";
+import React, { useEffect, useState } from "react";
+import useStore from "../store";
+import { Mesh, MeshStandardMaterial } from "three";
+import { GLTF } from "three/examples/jsm/loaders/GLTFLoader";
 
 type GLTFResult = GLTF & {
     nodes: {
-        Sphere: Mesh
-        Sphere_1: Mesh
-        Sphere_2: Mesh
-        Eyeball: Mesh
-        Eyeliner: Mesh
-        Pupil: Mesh
-        Eyeball001: Mesh
-        Eyeliner001: Mesh
-        Pupil001: Mesh
-        Curve: Mesh
-        Curve003: Mesh
-        Cylinder001: Mesh
-        Curve014: Mesh
-        Curve006: Mesh
-        Curve015: Mesh
-        Cube001: Mesh
-    }
+        Sphere: Mesh;
+        Sphere_1: Mesh;
+        Sphere_2: Mesh;
+        Eyeball: Mesh;
+        Eyeliner: Mesh;
+        Pupil: Mesh;
+        Eyeball001: Mesh;
+        Eyeliner001: Mesh;
+        Pupil001: Mesh;
+        Curve: Mesh;
+        Curve003: Mesh;
+        Cylinder001: Mesh;
+        Curve014: Mesh;
+        Curve006: Mesh;
+        Curve015: Mesh;
+        Cube001: Mesh;
+    };
     materials: {
-        Material: MeshStandardMaterial
-        ['Material.003']: MeshStandardMaterial
-        ['Material.004']: MeshStandardMaterial
-        ['Material.005']: MeshStandardMaterial
-        ['Material.011']: MeshStandardMaterial
-        ['Material.008']: MeshStandardMaterial
-        ['Material.006']: MeshStandardMaterial
-    }
-}
+        Material: MeshStandardMaterial;
+        ["Material.003"]: MeshStandardMaterial;
+        ["Material.004"]: MeshStandardMaterial;
+        ["Material.005"]: MeshStandardMaterial;
+        ["Material.011"]: MeshStandardMaterial;
+        ["Material.008"]: MeshStandardMaterial;
+        ["Material.006"]: MeshStandardMaterial;
+    };
+};
 
 const Ball = (_props: any) => {
-    const { nodes, materials } = useGLTF("/assets/models/ballModel.glb") as GLTFResult;
+    const { nodes, materials } = useGLTF(
+        "/assets/models/ballModel.glb"
+    ) as GLTFResult;
 
     const [resultsRequested, setResultsRequested] = useState<boolean>(false);
     const [inProgress, setInProgress] = useState<boolean>(false);
 
-    const settings = useStore(state => state.settings);
-    const { user, throwValues } = useStore(state => state.roundInfo.shot);
-    const { id, attempts } = useStore(state => state.roundInfo);
-    const requestResults = useStore(state => state.requestResults);
+    const settings = useStore((state) => state.settings);
+    const { user, throwValues } = useStore((state) => state.roundInfo.shot);
+    const { id, attempts } = useStore((state) => state.roundInfo);
+    const requestResults = useStore((state) => state.requestResults);
 
     const [ref, api] = useSphere(() => ({
         mass: 1,
@@ -69,7 +70,7 @@ const Ball = (_props: any) => {
             }
         });
         return () => subscription();
-    }, [resultsRequested, api, inProgress])
+    }, [resultsRequested, api, inProgress]);
 
     //reset ball when roundID changes
     useEffect(() => {
@@ -78,22 +79,25 @@ const Ball = (_props: any) => {
             setInProgress(false);
             api.velocity.set(0, 0, 0);
             api.angularVelocity.set(0, 0, 0);
-            api.position.set(settings.ballSpawn[0], settings.ballSpawn[1], settings.ballSpawn[2]);
-        }, 2000)
-    }, [id, attempts])
+            api.position.set(
+                settings.ballSpawn[0],
+                settings.ballSpawn[1],
+                settings.ballSpawn[2]
+            );
+        }, 2000);
+    }, [id, attempts]);
 
     return (
-        <mesh
-            ref={ref}
-            dispose={null}>
+        <mesh ref={ref} dispose={null}>
             <mesh
                 castShadow
                 receiveShadow
                 geometry={nodes.Eyeball.geometry}
-                material={materials['Material.005']}
+                material={materials["Material.005"]}
                 position={[0.3, 0.41, -0.89]}
                 rotation={[0, 1.4, 0.25]}
-                scale={[0.06, 0.34, 0.3]}>
+                scale={[0.06, 0.34, 0.3]}
+            >
                 <mesh
                     castShadow
                     receiveShadow
@@ -115,10 +119,11 @@ const Ball = (_props: any) => {
                 castShadow
                 receiveShadow
                 geometry={nodes.Eyeball001.geometry}
-                material={materials['Material.008']}
+                material={materials["Material.008"]}
                 position={[-0.3, 0.41, -0.89]}
                 rotation={[Math.PI, 1.4, -2.89]}
-                scale={[0.06, 0.34, 0.3]}>
+                scale={[0.06, 0.34, 0.3]}
+            >
                 <mesh
                     castShadow
                     receiveShadow
@@ -191,12 +196,15 @@ const Ball = (_props: any) => {
                 castShadow
                 receiveShadow
                 geometry={nodes.Cube001.geometry}
-                material={materials['Material.006']}
+                material={materials["Material.006"]}
                 position={[0.2, -0.6, -1.16]}
                 rotation={[1.54, 0.67, -3.02]}
                 scale={[-0.17, 0.03, 0.32]}
             />
-            <group position={[0.03, 0, -0.04]} rotation={[-1.96, 0, -Math.PI / 2]}>
+            <group
+                position={[0.03, 0, -0.04]}
+                rotation={[-1.96, 0, -Math.PI / 2]}
+            >
                 <mesh
                     castShadow
                     receiveShadow
@@ -207,7 +215,7 @@ const Ball = (_props: any) => {
                     castShadow
                     receiveShadow
                     geometry={nodes.Sphere_1.geometry}
-                    material={materials['Material.003']}
+                    material={materials["Material.003"]}
                 />
                 <mesh
                     castShadow
@@ -217,9 +225,9 @@ const Ball = (_props: any) => {
                 />
             </group>
         </mesh>
-    )
-}
+    );
+};
 
-useGLTF.preload("/assets/models/ballModel.glb")
+useGLTF.preload("/assets/models/ballModel.glb");
 
 export default Ball;

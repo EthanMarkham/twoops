@@ -1,9 +1,8 @@
 import React from "react";
-import { useSpring, config } from 'react-spring';
+import { useSpring, config } from "react-spring";
 import { AnimatedWrapper, Img, PageHolder } from "../styles";
 
 const Loading = (props: any) => {
-
     const spin = useSpring({
         from: {
             rotateZ: 180,
@@ -14,19 +13,16 @@ const Loading = (props: any) => {
             opacity: 1,
         },
         loop: true,
-        config: config.molasses
-    })
+        config: config.molasses,
+    });
 
     return (
         <PageHolder flex={true} center={true}>
-            <AnimatedWrapper style={spin} >
+            <AnimatedWrapper style={spin}>
                 <Img src="/assets/img/bucketsLogo.png" />
             </AnimatedWrapper>
         </PageHolder>
     );
-}
-
-
-
+};
 
 export default Loading;
