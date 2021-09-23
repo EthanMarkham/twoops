@@ -6,7 +6,7 @@ const CopyPlugin = require('copy-webpack-plugin')
 module.exports = {
   name: 'server',
   entry: {
-    server: path.resolve(__dirname, 'server/server.ts'),
+    server: path.resolve(__dirname, 'src/server/server.ts'),
   },
   mode: 'production',
   output: {
@@ -48,8 +48,8 @@ module.exports = {
   plugins: [
     new CopyPlugin({
       patterns: [
-        { context: 'server', from: 'views', to: 'views' },
-        { context: 'server', from: 'public', to: 'static/assets' }
+        { context: 'src/server', from: 'views', to: 'views' },
+        { context: 'src/server', from: 'public', to: 'static/assets' }
       ],
     }),
   ],

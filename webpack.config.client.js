@@ -7,7 +7,7 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 module.exports = {
     name: "client",
     entry: {
-        client: path.resolve(__dirname, "client/client.tsx"),
+        client: path.resolve(__dirname, "src/client/client.tsx"),
     },
     mode: "production",
     output: {
@@ -35,8 +35,8 @@ module.exports = {
         new WebpackManifestPlugin(),
         new CopyWebpackPlugin({
             patterns: [
-                { context: "client", from: "public", to: "assets" },
-                { context: "server", from: "public", to: "assets" },
+                { context: "src/client", from: "public", to: "assets" },
+                { context: "src/server", from: "public", to: "assets" },
             ],
         }),
     ],

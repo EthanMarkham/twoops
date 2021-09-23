@@ -42,7 +42,10 @@ Twoops adds viewer engagment to your stream.
   
   7. Set the DB, Settinsg Collection, and round collection variables as you see fit.
   
-  8. Run `yarn start` or `npm start`
+  8. Run ```
+  yarn build:server
+  yar build:client
+  yarn start```
   
   
 ## Where users can get help with your project:

@@ -1,8 +1,6 @@
 // tsconfig.client.json
 {
-  "include": [
-    "client"
-  ],
+  "include": ["src/client"],
   "compilerOptions": {
     "module": "es2020", // generate ES modules
     "target": "es5", // target ES5 API
