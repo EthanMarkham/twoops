@@ -12,9 +12,7 @@ Type "!shot x: [1-100] y: [1-100], z: [1-100]), with x, y, z representing the ve
 
 Twoops adds viewer engagment to your stream.
 
-How users can get started with the project:
-
-## To run locally:
+## To Run locally:
 
   1. Create a .ENV file with  the following variables:
   
@@ -66,6 +64,8 @@ Sound effects.
 React Three Fibre disables the canvas while not focused. If the game is minimized, it will wait til you focus on it to run the shot. Looking for further info on the frame loops [here](https://docs.pmnd.rs/react-three-fiber/API/canvas)
 
 The basket detection system is buggy and needs to be redone. Currently I have to hitbox's (one above and one slighty below the rim), and if the ball hits both of them in the correct sequency I mark it as success.
+
+Ball bounces a little when you first load page.
 
 ## Who maintains and contributes to the project:
 
