@@ -1,11 +1,11 @@
 import { ObjectId } from "mongodb";
 import { Triplet } from "@react-three/cannon";
-import { Boundries, ChatSettings } from "../types/game";
+import { Boundaries, ChatSettings } from "../types/game";
 
 export default class GameSetting {
     constructor(
         public channel: string,
-        public hoopsSpawn: Boundries = {
+        public hoopsSpawn: Boundaries = {
             x: {
                 MIN: -15,
                 MAX: 30,

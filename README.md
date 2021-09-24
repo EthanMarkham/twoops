@@ -70,6 +70,8 @@ The basket detection system is buggy and needs to be redone. Currently I have to
 
 Ball bounces a little when you first load page.
 
+When I build the client CopyPlugin overwrites the public folder while the same behavior does not happen when building the server. To fix I added another rule to copy the servers public folder after on the client build config. 
+
 ## Who maintains and contributes to the project:
 
 Ethan Markham. Reach out to me on discord at t00much#8965

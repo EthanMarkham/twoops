@@ -2,7 +2,7 @@ import { Triplet } from "@react-three/cannon";
 import RoundInfo from "./models/roundInfo";
 import {
     Limits,
-    Boundries,
+    Boundaries,
     ChatSettings,
     ShotInfo,
     ShotResult,
@@ -14,7 +14,7 @@ const getRandomInt = (limits: Limits) => {
     return Math.floor(Math.random() * (limits.MAX - limits.MIN)) + limits.MIN;
 };
 
-export const getRandomPosition = (boundries: Boundries): Triplet => {
+export const getRandomPosition = (boundries: Boundaries): Triplet => {
     return [
         getRandomInt(boundries.x),
         getRandomInt(boundries.y),

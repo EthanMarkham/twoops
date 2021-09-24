@@ -48,7 +48,7 @@ export interface Limits {
     MAX: number;
 }
 
-export interface Boundries {
+export interface Boundaries {
     x: Limits;
     y: Limits;
     z: Limits;
