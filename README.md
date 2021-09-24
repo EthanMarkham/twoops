@@ -20,6 +20,7 @@ Twoops adds viewer engagment to your stream.
         BOT_ID=
         BOT_PASSWORD=
         BOT_SECRET=
+        BOT_TOKEN=
         SERVER_URL=http://localhost:[PORT]
         SESSION_SECRET=
 
@@ -36,11 +37,11 @@ Twoops adds viewer engagment to your stream.
   
   4. Copy your bot user-name, client ID, and generate a new secret for your .ENV file 
 
-  5. Obtain an O:Auth token for your bot at [Twitch Chat OAuth Password Generator](https://twitchapps.com/tmi/) and paste it into the BOT_SECRET field
+  5. Obtain an O:Auth token for your bot at [Twitch Chat OAuth Password Generator](https://twitchapps.com/tmi/) and paste it into the BOT_TOKEN field
   
   6. Set the DB_CONN_STRING to your mongoDB connection. For example: `mongodb+srv://user:password@instance.8fe3.mongodb.net`
   
-  7. Set the DB, Settinsg Collection, and round collection variables as you see fit.
+  7. Set the DB_NAME, SETTINGS_COLLECTION_NAME, ROUND_COLLECTION_NAME, and PORT variables as you see fit. Make sure the port correctly matches the callback and port in the SERVER_URL variable.
   
   8. Run ```
   yarn build:server
@@ -50,29 +51,29 @@ Twoops adds viewer engagment to your stream.
   
 ## Where users can get help with your project:
 
-I am always looking for better methods, organization and nearly anything. I am an entry level developer and appreciate any feedback what-so-ever! 
+I am always open to feedback and improvements!
 
-Create a UI for users to be able set custom settings, chat messages, colors, timers, hoop spawn locations, and ect. The backend infrastructure is there and need to code a front end.
+Create a UI for users to be able set custom settings, chat messages, colors, timers, hoop spawn locations, and ect. The backend is mostly there.
 
-Implement a system to mark games not inprogress either via a button on screen or over a timer. Often times shots get missed which bugs out the game as it thinks you are still in an active round.
+Implement a system to mark games as not 'iPprogress', either via a button on screen or over a timer
 
 Create a new ball texture map.
 
-Ideas for a better shooting mechanic system.
+Ideas for better shooting mechanics.
 
 Sound effects.
 
 ## Known Bugs:
 
-React Three Fibre disables the canvas while not focused. If the game is minimized, it will wait til you focus on it to run the shot. Looking for further info on the frame loops [here](https://docs.pmnd.rs/react-three-fiber/API/canvas)
+React Three Fibre disables the canvas while not focused. If the game is minimized, it will wait til you focus back on the window to run the shot. Looking for further info on the frame loops [here](https://docs.pmnd.rs/react-three-fiber/API/canvas)
 
-The basket detection system is buggy and needs to be redone. Currently I have to hitbox's (one above and one slighty below the rim), and if the ball hits both of them in the correct sequency I mark it as success.
+The basket detection system is buggy and needs to be redone. Currently I have two hitbox's (one above and one slighty below the rim), and if the ball hits both of them in the correct sequency I mark it as success.
 
 Ball bounces a little when you first load page.
 
-When I build the client CopyPlugin overwrites the public folder while the same behavior does not happen when building the server. To fix I added another rule to copy the servers public folder after on the client build config. 
+When I build the client, CopyPlugin overwrites the public folder while the same behavior does not happen when building the server. To fix I added another rule to copy the servers public folder after on the client build config. 
 
 ## Who maintains and contributes to the project:
 
-Ethan Markham. Reach out to me on discord at t00much#8965
+Reach out to me on discord at t00much#8965
 
