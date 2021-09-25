@@ -1,6 +1,9 @@
+//Feel like this file is breaking SRP. Planning to redesign.
+
+
 import { SocketAPI } from "./webSocket";
 import { TwitchBot } from "./twitchBot";
-import { Collection } from "mongodb";
+import { Collection, ObjectId } from "mongodb";
 import GameSetting from "../models/gameSettings";
 import RoundInfo from "../models/roundInfo";
 import {
@@ -20,6 +23,7 @@ const twitchBOT: TwitchBot = require("./twitchBot");
 
 const gameManager: GameManager = (module.exports = {
     pendingShots: new Map<string, PendingShot>(),
+    pendingAutoCancelRoundEvents: new Map<string, NodeJS.Timeout>(),
     delayedGames: [],
     addListeners() {
         const {
@@ -145,6 +149,13 @@ const gameManager: GameManager = (module.exports = {
                                 gameManager.delayedGames.splice(index, 1);
                     }, settings.chat.delay);
 
+                    //cancel auto cancel event
+                    let timeOut = gameManager.pendingAutoCancelRoundEvents.get(channel);
+                    if (timeOut) {
+                        clearTimeout(timeOut);
+                    }
+                    gameManager.pendingAutoCancelRoundEvents.delete(channel);
+
                     if (shot.result == "SUCCESS") {
                         const newRound = new RoundInfo(
                             channel,
@@ -209,5 +220,28 @@ const gameManager: GameManager = (module.exports = {
                     }
                 });
         });
+    },
+    setAutoResetTimer(channel: string, roundID: ObjectId) {
+        let timeout: NodeJS.Timeout = setTimeout(() => {
+            console.log(
+                `auto cancelling shot for ${channel}, roundID: ${roundID}`
+            );
+            mongoAPI.db &&
+                mongoAPI.db
+                    .collection(
+                        process.env.ROUND_COLLECTION_NAME || "roundinfo"
+                    )
+                    .updateOne(
+                        { _id: roundID },
+                        { $set: { inProgress: false } }
+                    );
+            //Can I have an object delete from within itself?????
+            gameManager.pendingAutoCancelRoundEvents.delete(channel);
+        }, 15000);
+        timeout && gameManager.pendingAutoCancelRoundEvents.set(channel, timeout);
+    },
+    setShotAcknowledgment(channel: string, roundID: ObjectId) {
+        gameManager.pendingShots.delete(channel);
+        gameManager.setAutoResetTimer(channel, roundID);
     },
 });

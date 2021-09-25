@@ -67,6 +67,8 @@ export interface ChatSettings {
 
 //MODULES
 export interface GameManager {
+    setAutoResetTimer(channel: string, roundID: ObjectId): void;
+    pendingAutoCancelRoundEvents: Map<string, NodeJS.Timeout>;
     pendingShots: Map<string, PendingShot>;
     delayedGames: string[];
     addListeners: () => void;

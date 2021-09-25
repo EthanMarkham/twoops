@@ -34,11 +34,13 @@ const Ball = (props: any) => {
         position: settings.ballSpawn,
         rotation: [0, Math.PI / -5, 0],
         material: { friction: 1, restitution: 0.5 },
+        allowSleep: false
     }));
 
     useEffect(() => {
         if (!inProgress && user !== "" && throwValues[0] !== 0) {
             setInProgress(true);
+            console.log('shot at ' + new Date().setUTCSeconds)
             api.applyImpulse(throwValues, [0, 0, throwValues[2] / 45]);
         }
     }, [inProgress, throwValues, user]);

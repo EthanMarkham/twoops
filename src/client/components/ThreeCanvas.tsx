@@ -22,6 +22,8 @@ const Scene = (_props: any) => {
         socket.on("NEW_SHOT", ({ user, shot }: ShotInfo) => {
             socket.emit("ACKNOWLEDGED_SHOT", channel);
             console.log("hooked shot", user, shot);
+            console.log('hooked at ' + new Date().setUTCSeconds)
+
             setShot(user, [shot.x, shot.y, shot.z]);
         });
         return () => {
@@ -39,7 +41,7 @@ const Scene = (_props: any) => {
                 backgroundColor: alphaChannel,
                 overflow: "hidden",
             }}
-            frameloop="demand"
+            frameloop="always"
         >
             <Physics>
                 <Environment ballPosition={ballSpawn} />

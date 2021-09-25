@@ -1,9 +1,12 @@
+import { MongoAPIError } from "mongodb";
 import { ChatListener } from "../modules/twitchBot";
 import { SocketListener } from "../modules/webSocket";
 import { AggregatedResponse, PendingShot, ShotInfo } from "../types/game";
 import { getShot } from "../utils";
 
 const HELP_MSG: string = "Please enter !shot followed by x, y, z [1-100].";
+const mongoAPI = require("../modules/mongo");
+const gameManager = require("../modules/game");
 
 export const joinListener: SocketListener = {
     event: "JOIN_CHANNEL",
@@ -18,12 +21,10 @@ export const leaveListener: SocketListener = {
     },
 };
 
+//SOCKET LISTENER TO ACKNOWLEDGE SHOT WAS MADE FROM CLIENT, MARK GAME IN PROGRESS
 export const acknowledgeShotListener: SocketListener = {
     event: "ACKNOWLEDGED_SHOT",
     callable: (_, channel: string) => {
-        const mongoAPI = require("../modules/mongo");
-        const gameManager = require("../modules/game");
-
         let pendingShot: PendingShot | undefined =
             gameManager.pendingShots.get(channel);
 
@@ -45,8 +46,7 @@ export const acknowledgeShotListener: SocketListener = {
                 { $set: { inProgress: true } }
             );
 
-        gameManager.pendingShots.delete(channel);
-        //setTimeout(() => gameManager.setInProgress(channel, false), 60000)
+        gameManager.setShotAcknowledgment(channel, pendingShot.roundID);
     },
 };
 

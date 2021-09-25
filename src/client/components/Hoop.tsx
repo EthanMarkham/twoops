@@ -123,6 +123,8 @@ export default function Hoop(_props: any) {
                 ([0, 0, 0] as ArrayLike<number>),
         ],
         material: { friction: 1, restitution: 0.2 },
+        allowSleep: false
+
     }));
 
     //top hit collision tracker
@@ -137,6 +139,8 @@ export default function Hoop(_props: any) {
             nodes.BasketTrigger_1!.geometry!.index!.array ||
                 ([0, 0, 0] as ArrayLike<number>),
         ],
+        allowSleep: false
+
     }));
 
     //bottom hit collision tracker
@@ -151,6 +155,8 @@ export default function Hoop(_props: any) {
             nodes.BasketTrigger_2!.geometry!.index!.array ||
                 ([0, 0, 0] as ArrayLike<number>),
         ],
+        allowSleep: false
+
     }));
 
     //SET NEW HITBOX POSITIONS WITH API WHEN HOOP MOVES
