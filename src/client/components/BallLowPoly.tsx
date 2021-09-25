@@ -40,7 +40,7 @@ const Ball = (props: any) => {
     useEffect(() => {
         if (!inProgress && user !== "" && throwValues[0] !== 0) {
             setInProgress(true);
-            console.log('shot at ' + new Date().setUTCSeconds)
+            console.log('shot at ' + new Date().getTime())
             api.applyImpulse(throwValues, [0, 0, throwValues[2] / 45]);
         }
     }, [inProgress, throwValues, user]);

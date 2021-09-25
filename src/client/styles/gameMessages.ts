@@ -119,7 +119,8 @@ export const Wrapper = styled.div`
     user-select: none;
     padding: 0;
     margin: 0;
-
+    pointer-events: none;
+    
     position: absolute;
     top: 0;
     left 0;

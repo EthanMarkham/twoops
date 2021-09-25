@@ -17,7 +17,6 @@ interface RoundInfo {
     shot: {
         user: string | null;
         throwValues: Triplet;
-        isThrown: boolean;
     };
     results: {
         requested: boolean;
@@ -64,7 +63,6 @@ const DEFAULTS: {
         id: v4(),
         attempts: 0,
         shot: {
-            isThrown: false,
             user: null,
             throwValues: [0, 0, 0],
         },
@@ -94,7 +92,6 @@ const useStore = create<Store>((set, get) => ({
                 shot: {
                     user: user,
                     throwValues: value,
-                    isThrown: false,
                 },
             },
         })),

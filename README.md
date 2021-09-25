@@ -65,7 +65,9 @@ Sound effects.
 
 ## Known Bugs:
 
-React Three Fibre disables the canvas while not focused. If the game is minimized, it will wait til you focus back on the window to run the shot. Looking for further info on the frame loops [here](https://docs.pmnd.rs/react-three-fiber/API/canvas)
+~~React Three Fibre disables the canvas while not focused. If the game is minimized, it will wait til you focus back on the window to run the shot. Looking for further info on the frame loops [here](https://docs.pmnd.rs/react-three-fiber/API/canvas)~~
+
+Client socket does not run event while window is minimized. Game will not run unless it is open somewhere on your screen. 
 
 The basket detection system is buggy and needs to be redone. Currently I have two hitbox's (one above and one slighty below the rim), and if the ball hits both of them in the correct sequency I mark it as success.
 

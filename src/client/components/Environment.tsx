@@ -1,45 +1,13 @@
-import { Triplet, useBox, usePlane } from "@react-three/cannon";
-import { useThree } from "@react-three/fiber";
-import React, { useEffect, useRef } from "react";
+import { Triplet} from "@react-three/cannon";
+import React from "react";
+import useFloor from "../hooks/useFloor";
 
 interface EnvironmentProps {
     ballPosition: Triplet;
 }
-const Environment = ({ ballPosition }: EnvironmentProps) => {
-    const standPosition = useRef<Triplet>([
-        ballPosition[0],
-        ballPosition[1] - 2,
-        ballPosition[2],
-    ] as Triplet);
 
-    //Camera
-    const { camera } = useThree();
-    useEffect(() => {
-        camera.position.set(0, 15, -20);
-        camera.rotation.set(-Math.PI / 80, Math.PI, 0);
-    }, [camera]);
-
-    //FLOOR
-    usePlane(() => ({
-        position: [0, -30, 0],
-        rotation: [-Math.PI / 2, 0, 0],
-        material: {
-            friction: 0,
-            restitution: 1.4,
-        },
-    }));
-
-    //Stand
-    useBox(() => ({
-        position: standPosition.current,
-        type: "Static",
-        mass: 0,
-        material: {
-            friction: 0,
-            restitution: 0.01,
-        },
-    }));
-
+const Environment = ({ballPosition}: EnvironmentProps) => {
+    useFloor(ballPosition);
     return (
         <group>
             <pointLight
