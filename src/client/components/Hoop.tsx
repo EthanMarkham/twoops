@@ -10,6 +10,7 @@ import { Triplet, useTrimesh } from "@react-three/cannon";
 import { useFrame } from "@react-three/fiber";
 import { GLTF } from "three/examples/jsm/loaders/GLTFLoader";
 import useStore from "../store";
+import { MeshStandardMaterial } from "three";
 
 type GLTFResult = GLTF & {
     nodes: {
@@ -43,7 +44,11 @@ export default function Hoop(_props: any) {
     const { nodes, materials } = useGLTF(
         "/assets/models/hoopModel.glb"
     ) as GLTFResult;
-
+    const newBackBoardMaterial: MeshStandardMaterial = materials["Material.003"];
+    newBackBoardMaterial.transparent = true;
+    newBackBoardMaterial.opacity = 0.3;
+    newBackBoardMaterial.needsUpdate = true;
+    
     const [isResponding, setRespondingStatus] = useState<boolean>(false);
     const resultsRequested: boolean = useStore(
         (state) => state.roundInfo.results.requested
@@ -63,6 +68,8 @@ export default function Hoop(_props: any) {
         [topHit, bottomHit, hitHoop]
     );
 
+
+    
     //do i need to promise to ensure it runs in order?
     //push results up state when requested. is there better pattern for this?
     useEffect(() => {
@@ -174,7 +181,7 @@ export default function Hoop(_props: any) {
                 castShadow
                 receiveShadow
                 geometry={nodes.Plane.geometry}
-                material={materials["Material.003"]}
+                material={newBackBoardMaterial}
             />
             <mesh
                 castShadow
