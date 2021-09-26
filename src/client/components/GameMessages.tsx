@@ -114,12 +114,15 @@ const GameMessages = (props: any) => {
                         <AttemptCount style={style}>{attempts}</AttemptCount>
                     )}
                     <ShotLabel>!SHOT</ShotLabel>
-                    {item && (
+                    {/* 
+                     {item && (
                         <BucketFiller style={style}>
                             since the last
                         </BucketFiller>
                     )}
                     {item && <BucketLabel style={style}>BUCKET</BucketLabel>}
+                    */}
+                   
                 </InfoBox>
             ))}
         </Wrapper>

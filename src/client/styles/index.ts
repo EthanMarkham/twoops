@@ -56,9 +56,3 @@ export const AnimatedWrapper = styled(animated.div)`
     height: fit-content;
 `;
 
-export const SettingsLogo = styled(SettingsSVG)`
-    position: fixed;
-    width: 40px;
-    bottom: 30px;
-    left: 5%;
-`;

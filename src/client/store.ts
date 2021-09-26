@@ -27,6 +27,7 @@ interface RoundInfo {
 }
 
 interface SettingsInfo {
+    showingPanel: boolean;
     channel: string;
     ballSpawn: Triplet;
     alphaChannel: string;
@@ -45,6 +46,7 @@ export interface Store {
     lastShot: Date;
     error: null | Error;
     getGameData: () => void;
+    toggleSettings: () => void;
     setShot: (user: string, value: Triplet) => void;
     setResults: (data: ResultMessage, callback: () => void) => void;
     requestResults: () => void;
@@ -55,6 +57,7 @@ const DEFAULTS: {
     ROUND: RoundInfo;
 } = {
     SETTINGS: {
+        showingPanel: false,
         channel: "",
         ballSpawn: [-18, 5, 0],
         alphaChannel: "#ffffff",
@@ -83,7 +86,7 @@ const useStore = create<Store>((set, get) => ({
     settings: DEFAULTS.SETTINGS,
     lastShot: new Date(),
     error: null,
-    setShot: (user, value) =>
+    setShot(user, value) {
         set((state) => ({
             ...state,
             lastShot: new Date(),
@@ -94,8 +97,18 @@ const useStore = create<Store>((set, get) => ({
                     throwValues: value,
                 },
             },
-        })),
-    getGameData: () => {
+        }))
+    },
+    toggleSettings() {
+        set((state) => ({
+            ...state,
+            settings: {
+                ...state.settings,
+                showingPanel: !state.settings.showingPanel,
+            }
+        }))
+    },
+    getGameData() {
         fetch("/api/init")
             .then((data: any) => data.json())
             .then((data: any) => {
@@ -123,7 +136,7 @@ const useStore = create<Store>((set, get) => ({
                 }
             });
     },
-    setResults: ({ success, isAirball }, callback) => {
+    setResults({ success, isAirball }, callback) {
         const copy: Store = get();
         fetch("/api/logShot", {
             method: "POST",
@@ -164,7 +177,7 @@ const useStore = create<Store>((set, get) => ({
             },
         }));
     },
-    requestResults: () =>
+    requestResults() {
         set((state) => ({
             ...state,
             roundInfo: {
@@ -174,7 +187,8 @@ const useStore = create<Store>((set, get) => ({
                     requested: true,
                 },
             },
-        })),
+        }));
+    },
 }));
 
 export default useStore;
