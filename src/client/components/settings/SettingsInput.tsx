@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import AudioIconSVG from "../svgComponents/AudioIconSVG";
+import AudioIconSVG from '../../svgComponents/AudioIconSVG'
 
 const Container = styled.div<{
     column: number;
@@ -61,7 +61,7 @@ const ChatInput = styled.textarea`
     background: #1d1d1d;
     border-radius: 4px;
 `;
-interface ChatSettingInputProps {
+interface TextInputInputProps {
     label: string;
     text: string;
     audioIsEnabled: Boolean;
@@ -69,14 +69,14 @@ interface ChatSettingInputProps {
     col: number;
     row: number;
 }
-const ChatSettingInput = ({
+const TextInput = ({
     label,
     text,
     audioIsEnabled,
     setText,
     col,
     row,
-}: ChatSettingInputProps) => {
+}: TextInputInputProps) => {
     const onAudio = () => {};
     return (
         <Container column={col} row={row}>
@@ -104,4 +104,4 @@ const ChatSettingInput = ({
     );
 };
 
-export default ChatSettingInput;
+export default TextInput;

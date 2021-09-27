@@ -7,10 +7,10 @@ import {
     animated as a,
     config as springConfig,
 } from "react-spring";
-import SettingsPanel from "./components/Settings";
+import SettingsPanel from "./components/settings/Settings";
 import SettingsLogo from "./svgComponents/SettingsSVG";
 
-const BucketGame = React.lazy(() => import("./components/ThreeCanvas"));
+const BucketGame = React.lazy(() => import("./components/canvas/ThreeCanvas"));
 const GameMessages = React.lazy(() => import("./components/GameMessages"));
 const Loading = React.lazy(() => import("./components/Loading"));
 const AnimatedPanel = a(SettingsPanel);

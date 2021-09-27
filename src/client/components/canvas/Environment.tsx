@@ -1,6 +1,6 @@
 import { Triplet} from "@react-three/cannon";
 import React from "react";
-import useFloor from "../hooks/useFloor";
+import useFloor from "../../hooks/useFloor";
 
 interface EnvironmentProps {
     ballPosition: Triplet;

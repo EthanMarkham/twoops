@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import CancelSVG from "../svgComponents/CancelButtonSVG";
 
 export const Container = styled.div`
     position: absolute;
@@ -18,18 +17,6 @@ export const Container = styled.div`
     box-shadow: 44px 0px 30px rgba(0, 0, 0, 0.3);
 `;
 
-export const NavBar = styled.div`
-    width: calc(100% - 40px);
-    padding: 20px;
-    height: 85.32px;
-    background: #1d1d1d;
-
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    align-content: center;
-`;
 
 export const Footer = styled.div`
     width: 100%;
@@ -80,9 +67,7 @@ export const TableHeader = styled.div`
     height: 40px;
     color: white;
 `;
-export const CancelButton = styled(CancelSVG)`
-    z-index: 102;
-`;
+
 
 
 export const LogoContainer = styled.svg`

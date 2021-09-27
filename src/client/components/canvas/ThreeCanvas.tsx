@@ -1,13 +1,13 @@
 import React, { Suspense, useEffect } from "react";
-import useStore from "../store";
+import useStore from "../../store";
 import { Canvas } from "@react-three/fiber";
 import { Physics, Triplet } from "@react-three/cannon";
 import Environment from "./Environment";
 import Ball from "./BallLowPoly";
 import Hoop from "./Hoop";
 import { Socket } from "socket.io-client";
-import { ShotInfo } from "../../server/types/game";
-import CameraController from "../hooks/CameraController";
+import { ShotInfo } from "../../../server/types/game";
+import CameraController from "../../hooks/CameraController";
 
 const Scene = (_props: any) => {
     const { ballSpawn, colors } = useStore((state) => state.settings);

@@ -1,7 +1,7 @@
 import { useSphere } from "@react-three/cannon";
 import { useGLTF } from "@react-three/drei";
 import React, { useEffect, useState } from "react";
-import useStore from "../store";
+import useStore from "../../store";
 import { Mesh, MeshStandardMaterial } from "three";
 import { GLTF } from "three/examples/jsm/loaders/GLTFLoader";
 
