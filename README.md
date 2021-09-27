@@ -55,8 +55,6 @@ I am always open to feedback and improvements!
 
 Create a UI for users to be able set custom settings, chat messages, colors, timers, hoop spawn locations, and ect. The backend is mostly there.
 
-Implement a system to mark games as not 'iPprogress', either via a button on screen or over a timer
-
 Create a new ball texture map.
 
 Ideas for better shooting mechanics.
