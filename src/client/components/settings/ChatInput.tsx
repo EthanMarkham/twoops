@@ -1,8 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { ChatInfo } from "../../store";
-import SettingsInput from "./SettingsInput";
-import TextInput from "./SettingsInput";
+import TextInput from "./TextInput";
 
 const SettingsTable = styled.div`
     display: grid;
@@ -32,26 +31,30 @@ interface TableSectionInputProps {
 function ChatInput({ chatCopy, updateState }: TableSectionInputProps) {
     const keyMap = Object.keys(chatCopy).map((k) => ({
         key: k as keyof ChatInfo,
-        value: chatCopy[k as keyof ChatInfo],
+        value: chatCopy[k as keyof ChatInfo].toString(),
         type: typeof chatCopy[k as keyof ChatInfo],
     }));
 
     return (
         <SettingsTable>
-            <TableHeader>Colors</TableHeader>
-            {keyMap.map(({ key, value, type }, i) => (
-                <SettingsInput
-                    key={`input${i}`}
-                    col={i % 2}
-                    row={1 + Math.ceil((i + 1) / 2)}
-                    label={key}
-                    text={chatCopy[key] as string}
-                    audioIsEnabled={false}
-                    setText={(value: string) => {
-                        updateState(value, key);
-                    }}
-                />
-            ))}
+            <TableHeader>Chat</TableHeader>
+            {keyMap.map(({ key, value, type }, i) => {
+                switch (type) {
+                    case "string":
+                        return (
+                            <TextInput
+                                key={`input${i}`}
+                                gridPos={[i % 2, 1 + Math.ceil((i + 1) / 2)]}
+                                label={key}
+                                text={value}
+                                audioIsEnabled={false}
+                                setText={(value: string) => {
+                                    updateState(value as string, key);
+                                }}
+                            />
+                        );
+                }
+            })}
         </SettingsTable>
     );
 }

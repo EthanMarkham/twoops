@@ -1,13 +1,19 @@
-import React, {useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { animated, SpringValue, useSpring } from "react-spring";
-import useStore from '../store';
-import {LogoContainer} from '../styles/settings'
+import styled from "styled-components";
+import useStore from "../store";
 
-const Animated = animated(LogoContainer);
+const Animated = styled(animated.svg)`
+    position: fixed;
+    z-index: 100;
+    width: fit-content;
+    bottom: 10%;
+    left: 5%;
+    transform: scale(5);
+`;
 
-interface Props {
-}
-function SvgComponent({ }: Props) {
+interface Props {}
+function SvgComponent({}: Props) {
     const [isShowing, setShowing] = useState<boolean>(false);
     const togglePanel = useStore((state) => state.toggleSettings);
 
@@ -16,9 +22,9 @@ function SvgComponent({ }: Props) {
     }));
 
     useEffect(() => {
-        settingsLogoAPI.start({opacity: isShowing ? 1 : 0})
-        console.log('toggle icon', isShowing)
-    }, [isShowing])
+        settingsLogoAPI.start({ opacity: isShowing ? 1 : 0 });
+        console.log("toggle icon", isShowing);
+    }, [isShowing]);
 
     return (
         <Animated

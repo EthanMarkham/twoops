@@ -1,6 +1,7 @@
+import { animated } from "react-spring";
 import styled from "styled-components";
 
-export const Container = styled.div`
+export const AnimatedContainer = styled(animated.div)`
     position: absolute;
     display: flex;
     flex-direction: column;
@@ -17,28 +18,6 @@ export const Container = styled.div`
     box-shadow: 44px 0px 30px rgba(0, 0, 0, 0.3);
 `;
 
-
-export const Footer = styled.div`
-    width: 100%;
-    height: 75.46px;
-    display: flex;
-    background: #FFCF11;
-    justify-content: center;
-    align-content: center;
-`;
-
-export const SaveButton = styled.button`
-    background: transparent;
-    width: 100%;
-    height: 100%;
-    text-align: center; 
-    margin: auto;
-    outline: none;
-    border: none;
-    font-weight: bold;
-    font-size: 18px;
-    color: #000000;`
-
 export const Body = styled.div`
     height: calc(100vh - 240.78px);
     width: calc(100% - 40px);
@@ -47,34 +26,64 @@ export const Body = styled.div`
     flex-direction: row;
     overflow-x: hidden;
     overflow-y: auto;
-`
-export const SettingsTable = styled.div`
-    display: grid;
+`;
+
+export const InputContainer = styled.div<{
+    column: number;
+    row: number;
+}>`
     position: relative;
-    grid-template-columns: 1fr 1fr;
-    grid-auto-rows: min-content;
-    height: fit-content;
     width: 100%;
-    gap: 20px;
-    border-bottom: 1px solid #FFFFFF50;
-    padding-bottom: 50px;
+    overflow-x: none;
+    grid-column-start: ${(props) => props.column};
+    grid-row-start: ${(props) => props.row};
+
+    display: grid;
+    gap: 0.7em;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 4fr;
 `;
-export const TableHeader = styled.div`
-    grid-column: 1 / 3;
-    grid-row: 1;
+
+export const InputLabel = styled.div`
+    grid-column-start: 1;
+    grid-row-start: 1;
+
+    height: 100%;
+    width: 100%;
+
     display: flex;
-    align-items: flex-end;
-    height: 40px;
-    color: white;
+    align-items: center;
+    justify-content: flex-start;
+    color: #cccccc;
+    user-select: none;
 `;
 
+export const AudioIconHolder = styled.div`
+    grid-column-start: 2;
+    grid-row-start: 1;
 
+    height: 100%;
+    width: 100%;
 
-export const LogoContainer = styled.svg`
-    position: fixed;
-    z-index: 100;
-    width: fit-content;
-    bottom: 10%;
-    left: 5%;
-    transform: scale(5);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    color: #cccccc;
+`;
+
+export const ChatInput = styled.textarea`
+    grid-column-start: 1;
+    grid-column-end: 3;
+
+    grid-row-start: 2;
+
+    font-size: 18px;
+    color: #ffffff;
+    overflow-wrap: break-word;
+    padding: 0.6em;
+
+    display: flex;
+    align-items: center;
+    background: #1d1d1d;
+    border-radius: 4px;
 `;

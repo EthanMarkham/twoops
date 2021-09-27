@@ -1,24 +1,11 @@
 import React, { useMemo, useState, useEffect, useCallback } from "react";
-import {
-    TransitionFn,
-    animated,
-    TransitionRenderFn,
-    SpringValue,
-} from "react-spring";
+import { SpringValue } from "react-spring";
 import useStore, { ChatInfo } from "../../store";
-import {
-    Container,
-    Footer,
-    SaveButton,
-    SettingsTable,
-    Body,
-    TableHeader,
-} from "../../styles/settings";
-import SettingsInput from "./SettingsInput";
+
 import NavBar from "./NavBar";
 import ChatInput from "./ChatInput";
-
-const AnimatedContainer = animated(Container);
+import Footer from "./Footer";
+import { AnimatedContainer, Body } from "../../styles/settings";
 
 interface SettingsProps {
     style: {
@@ -31,26 +18,16 @@ export enum SECTION {
     COLORS = "COLORS",
     POSITION = "POSITION",
 }
+
 const SettingsPanel = ({ style }: SettingsProps) => {
     const settings = useStore((state) => state.settings);
     const togglePanel = useStore((state) => state.toggleSettings);
     const updateSettings = useStore((state) => state.updateSettings);
 
     const [chatCopy, setChatCopy] = useState<ChatInfo>(settings.chat); //copy context to state
-    const [editableText, setEditable] = useState<string[]>([]);
     const [sectionINDEX, setSectionIndex] = useState<SECTION>(SECTION.CHAT);
 
-    const updateChat = useCallback(() => {
-        setChatCopy(settings.chat);
-        setEditable(
-            Object.keys(chatCopy).filter(
-                (k) => typeof chatCopy[k as keyof ChatInfo] == "string"
-            )
-        );
-    }, [settings.chat]);
-    useEffect(() => {
-        updateChat;
-    }, [updateChat]);
+    useEffect(() => setChatCopy(settings.chat), [settings.chat]);
 
     const saveUpdates = useCallback(() => {
         updateSettings({
@@ -67,7 +44,7 @@ const SettingsPanel = ({ style }: SettingsProps) => {
                 [key]: value,
             }));
         },
-        [chatCopy, editableText]
+        [chatCopy]
     );
 
     return (
@@ -76,10 +53,7 @@ const SettingsPanel = ({ style }: SettingsProps) => {
             <Body>
                 <ChatInput chatCopy={chatCopy} updateState={updateChatState} />
             </Body>
-
-            <Footer>
-                <SaveButton onClick={saveUpdates}>UPDATE SETTINGS</SaveButton>
-            </Footer>
+            <Footer onSave={() => saveUpdates()} />
         </AnimatedContainer>
     );
 };
