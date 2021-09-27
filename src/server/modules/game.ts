@@ -1,6 +1,5 @@
 //Feel like this file is breaking SRP. Planning to redesign.
 
-
 import { SocketAPI } from "./webSocket";
 import { TwitchBot } from "./twitchBot";
 import { Collection, ObjectId } from "mongodb";
@@ -24,7 +23,7 @@ const twitchBOT: TwitchBot = require("./twitchBot");
 const gameManager: GameManager = (module.exports = {
     pendingShots: new Map<string, PendingShot>(),
     pendingAutoCancelRoundEvents: new Map<string, NodeJS.Timeout>(),
-    delayedGames: [],
+    delayedGames: new Map<string, boolean>(),
     addListeners() {
         const {
             joinListener,
@@ -137,20 +136,18 @@ const gameManager: GameManager = (module.exports = {
                 .getAggregatedData(channel)
                 .then(({ settings, roundInfo }) => {
                     //DELAY GAME IN TWITCH CHAT DURING STREAM DELAY
-                    gameManager.delayedGames.push(channel);
+                    gameManager.delayedGames.set(channel, true);
                     setTimeout(() => {
                         twitchBOT.say(
                             getResponseMessage(settings.chat, roundInfo, shot),
                             channel
                         );
-                        const index = gameManager.delayedGames.indexOf(channel);
-                        if (index > -1)
-                            gameManager.delayedGames =
-                                gameManager.delayedGames.splice(index, 1);
+                        gameManager.delayedGames.delete(channel);
                     }, settings.chat.delay);
 
                     //cancel auto cancel event
-                    let timeOut = gameManager.pendingAutoCancelRoundEvents.get(channel);
+                    let timeOut =
+                        gameManager.pendingAutoCancelRoundEvents.get(channel);
                     if (timeOut) {
                         clearTimeout(timeOut);
                     }
@@ -203,7 +200,7 @@ const gameManager: GameManager = (module.exports = {
                                         "roundinfo"
                                 )
                                 .updateOne(
-                                    { channel: channel, isComplete: false },
+                                    { channel, isComplete: false },
                                     {
                                         $push: { shots: shot },
                                         $set: { inProgress: false },
@@ -238,7 +235,8 @@ const gameManager: GameManager = (module.exports = {
             //Can I have an object delete from within itself?????
             gameManager.pendingAutoCancelRoundEvents.delete(channel);
         }, 15000);
-        timeout && gameManager.pendingAutoCancelRoundEvents.set(channel, timeout);
+        timeout &&
+            gameManager.pendingAutoCancelRoundEvents.set(channel, timeout);
     },
     setShotAcknowledgment(channel: string, roundID: ObjectId) {
         gameManager.pendingShots.delete(channel);

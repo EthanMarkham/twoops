@@ -64,30 +64,31 @@ export const chatShotListener: ChatListener = {
         channel = channel.slice(1);
 
         if (!user) throw new Error("Error. Lost username?");
-
+        if (!socketAPI.io) throw new Error("No socket connection.");
         gameManager
             .getAggregatedData(channel)
             .then(({ settings, roundInfo }: AggregatedResponse) => {
                 let shot: ShotInfo | boolean = getShot(user, commands);
 
-                if (!shot) twitchAPI.say(HELP_MSG, user);
+                if (!shot) twitchAPI.say(HELP_MSG, channel);
                 else {
                     if (
-                        settings.chat.responseEnabled &&
                         roundInfo.inProgress &&
-                        !gameManager.delayedGames.includes(channel)
-                    )
-                        twitchAPI.say(
-                            settings.chat.inProgressMessage.replace(
-                                "@user",
-                                `@${user}`
-                            ),
-                            channel
+                        gameManager.delayedGames.get(channel) != undefined &&
+                        gameManager.pendingShots.get(channel) != undefined
+                    ) {
+                        console.log(
+                            "caught shot attempt for round in progress"
                         );
-                    else {
-                        //EMIT SOCKET INFO
-                        if (!socketAPI.io)
-                            throw new Error("No socket connection.");
+                        if (settings.chat.responseEnabled)
+                            twitchAPI.say(
+                                settings.chat.inProgressMessage.replace(
+                                    "@user",
+                                    `@${user}`
+                                ),
+                                channel
+                            );
+                    } else {
                         socketAPI.io
                             .to(`twoops-${channel}`)
                             .emit("NEW_SHOT", shot);
@@ -98,6 +99,7 @@ export const chatShotListener: ChatListener = {
                             channel: channel,
                             roundID: roundInfo._id,
                         };
+
 
                         if (settings.chat.responseEnabled)
                             pendingShot.chat =

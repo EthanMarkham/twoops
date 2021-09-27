@@ -22,7 +22,7 @@ export default class GameSetting {
         public ballSpawn: Triplet = [-18, 5, 0],
         public colors: ColorSettings = {
             backboard: "#808080",
-            background: "#808080"
+            background: "#808080",
         },
         public chat: ChatSettings = {
             responseEnabled: true,

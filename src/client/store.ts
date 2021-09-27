@@ -156,6 +156,9 @@ const useStore = create<Store>((set, get) => ({
                         settings: {
                             ...state.settings,
                             ...data.settings,
+                            showingPanel: data.newSettings,
+                            channel: data.channel,
+                            ballSpawn: data.ballsSpawn,
                         },
                         roundInfo: {
                             ...state.roundInfo,

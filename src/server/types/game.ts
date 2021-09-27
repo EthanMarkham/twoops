@@ -88,7 +88,7 @@ export interface GameManager {
     setAutoResetTimer(channel: string, roundID: ObjectId): void;
     pendingAutoCancelRoundEvents: Map<string, NodeJS.Timeout>;
     pendingShots: Map<string, PendingShot>;
-    delayedGames: string[];
+    delayedGames: Map<string, boolean>;
     addListeners: () => void;
     getSettings: (user: string) => Promise<SettingsInfoResponse>;
     getAggregatedData: (user: string) => Promise<AggregatedResponse>;
