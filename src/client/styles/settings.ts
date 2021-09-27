@@ -41,7 +41,7 @@ export const InputContainer = styled.div<{
     display: grid;
     gap: 0.7em;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 4fr;
+    grid-auto-rows: min-content;
 `;
 
 export const InputLabel = styled.div`
@@ -81,9 +81,10 @@ export const ChatInput = styled.textarea`
     color: #ffffff;
     overflow-wrap: break-word;
     padding: 0.6em;
-
+    
     display: flex;
     align-items: center;
+    justify-content: center;
     background: #1d1d1d;
     border-radius: 4px;
 `;

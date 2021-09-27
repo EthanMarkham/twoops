@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { ChatInfo } from "../../store";
+import BooleanInput from "./BooleanInput";
 import TextInput from "./TextInput";
 
 const SettingsTable = styled.div`
@@ -31,7 +32,7 @@ interface TableSectionInputProps {
 function ChatInput({ chatCopy, updateState }: TableSectionInputProps) {
     const keyMap = Object.keys(chatCopy).map((k) => ({
         key: k as keyof ChatInfo,
-        value: chatCopy[k as keyof ChatInfo].toString(),
+        value: chatCopy[k as keyof ChatInfo],
         type: typeof chatCopy[k as keyof ChatInfo],
     }));
 
@@ -46,10 +47,22 @@ function ChatInput({ chatCopy, updateState }: TableSectionInputProps) {
                                 key={`input${i}`}
                                 gridPos={[i % 2, 1 + Math.ceil((i + 1) / 2)]}
                                 label={key}
-                                text={value}
+                                text={value.toString()}
                                 audioIsEnabled={false}
                                 setText={(value: string) => {
                                     updateState(value as string, key);
+                                }}
+                            />
+                        );
+                    case "boolean":
+                        return (
+                            <BooleanInput
+                                key={`input${i}`}
+                                gridPos={[i % 2, 1 + Math.ceil((i + 1) / 2)]}
+                                label={key}
+                                isChecked={Boolean(value)}
+                                setValue={(value: boolean) => {
+                                    updateState(value as boolean, key);
                                 }}
                             />
                         );

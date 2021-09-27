@@ -39,6 +39,7 @@ const SettingsPanel = ({ style }: SettingsProps) => {
 
     const updateChatState = useCallback(
         (value: any, key: string): void => {
+            console.log('setting ' + key + ' to ' + value);
             setChatCopy((current) => ({
                 ...current,
                 [key]: value,
