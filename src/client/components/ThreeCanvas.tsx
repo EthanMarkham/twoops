@@ -10,7 +10,7 @@ import { ShotInfo } from "../../server/types/game";
 import CameraController from "../hooks/CameraController";
 
 const Scene = (_props: any) => {
-    const { ballSpawn, alphaChannel } = useStore((state) => state.settings);
+    const { ballSpawn, colors } = useStore((state) => state.settings);
     const socket: Socket = useStore((state) => state.socket);
     const channel = useStore((state) => state.settings.channel);
     const setShot: (user: string, value: Triplet) => void = useStore(
@@ -38,7 +38,7 @@ const Scene = (_props: any) => {
                 width: "100%",
                 margin: 0,
                 height: "100%",
-                backgroundColor: alphaChannel,
+                backgroundColor: colors.background,
                 overflow: "hidden",
             }}
             frameloop="always"

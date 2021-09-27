@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
 import { Triplet } from "@react-three/cannon";
-import { Boundaries, ChatSettings } from "../types/game";
+import { Boundaries, ChatSettings, ColorSettings } from "../types/game";
 
 export default class GameSetting {
     constructor(
@@ -20,7 +20,10 @@ export default class GameSetting {
             },
         },
         public ballSpawn: Triplet = [-18, 5, 0],
-        public alphaChannel: string = "#808080",
+        public colors: ColorSettings = {
+            backboard: "#808080",
+            background: "#808080"
+        },
         public chat: ChatSettings = {
             responseEnabled: true,
             delay: 10000,

@@ -26,11 +26,27 @@ interface RoundInfo {
     };
 }
 
-interface SettingsInfo {
+export interface ChatInfo {
+    responsesEnabled: boolean;
+    delay: number;
+    shotAcknowledged: string;
+    inProgressMessage: string;
+    firstTryMessage: string;
+    airballResponse: string;
+    reboundResponse: string;
+    brickResponse: string;
+    bucketResponse: string;
+}
+
+export interface SettingsInfo {
     showingPanel: boolean;
     channel: string;
     ballSpawn: Triplet;
-    alphaChannel: string;
+    chat: ChatInfo;
+    colors: {
+        background: string;
+        backboard: string;
+    }
 }
 
 interface ResultMessage {
@@ -45,11 +61,12 @@ export interface Store {
     roundInfo: RoundInfo;
     lastShot: Date;
     error: null | Error;
-    getGameData: () => void;
+    getGameData(): void;
     toggleSettings: () => void;
-    setShot: (user: string, value: Triplet) => void;
-    setResults: (data: ResultMessage, callback: () => void) => void;
-    requestResults: () => void;
+    updateSettings(info: SettingsInfo): void;
+    setShot(user: string, value: Triplet): void;
+    setResults(data: ResultMessage, callback: () => void): void;
+    requestResults(): void;
 }
 
 const DEFAULTS: {
@@ -60,7 +77,21 @@ const DEFAULTS: {
         showingPanel: false,
         channel: "",
         ballSpawn: [-18, 5, 0],
-        alphaChannel: "#ffffff",
+        chat: {
+            delay: 0,
+            responsesEnabled: false,
+            shotAcknowledged: "",
+            inProgressMessage: "",
+            firstTryMessage: "",
+            airballResponse: "",
+            reboundResponse: "",
+            brickResponse: "",
+            bucketResponse: "",
+        },
+        colors: {
+            background: "",
+            backboard: ""
+        }
     },
     ROUND: {
         id: v4(),
@@ -97,7 +128,7 @@ const useStore = create<Store>((set, get) => ({
                     throwValues: value,
                 },
             },
-        }))
+        }));
     },
     toggleSettings() {
         set((state) => ({
@@ -105,8 +136,8 @@ const useStore = create<Store>((set, get) => ({
             settings: {
                 ...state.settings,
                 showingPanel: !state.settings.showingPanel,
-            }
-        }))
+            },
+        }));
     },
     getGameData() {
         fetch("/api/init")
@@ -124,7 +155,7 @@ const useStore = create<Store>((set, get) => ({
                         pageIndex: Page.GAME,
                         settings: {
                             ...state.settings,
-                            ...data,
+                            ...data.settings,
                         },
                         roundInfo: {
                             ...state.roundInfo,
@@ -135,6 +166,14 @@ const useStore = create<Store>((set, get) => ({
                     }));
                 }
             });
+    },
+    updateSettings(data) {
+        set((state) => ({
+            ...state,
+            settings: {
+                ...data
+            },
+        }));
     },
     setResults({ success, isAirball }, callback) {
         const copy: Store = get();

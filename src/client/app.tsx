@@ -1,9 +1,8 @@
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense, useEffect } from "react";
 import useStore, { Page } from "./store";
 import { PageHolder } from "./styles";
 import GlobalFonts from "./styles/fonts";
 import {
-    useSpring,
     useTransition,
     animated as a,
     config as springConfig,
@@ -21,16 +20,13 @@ export const App: React.FC = () => {
     const init = useStore((state) => state.getGameData);
     const showingPanel = useStore((state) => state.settings.showingPanel);
 
-
-    useEffect(() => {
-        init();
-    }, []);
+    useEffect(init, []);
 
     const settingsPanelTransition = useTransition(showingPanel, {
-        from: { x: -100, opacity: 0 },
-        enter: { x: 0, opacity: 1 },
-        leave: { x: -100, opacity: 0 },
-        config: springConfig.molasses,
+        from: { x: -100 },
+        enter: { x: 0 },
+        leave: { x: -100 },
+        config: springConfig.wobbly,
     });
 
     return (
@@ -45,12 +41,11 @@ export const App: React.FC = () => {
                         <SettingsLogo />
 
                         {settingsPanelTransition(
-                            ({ x, opacity }, isShowing) =>
+                            ({ x }, isShowing) =>
                                 isShowing && (
                                     <AnimatedPanel
                                         style={{
-                                            opacity,
-                                            transform: `translate(${x}%)`,
+                                            transform: x.to(x => `translate(${x}%)`),
                                         }}
                                     />
                                 )

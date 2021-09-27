@@ -17,8 +17,11 @@ router.get("/init", verifyUser, async (req: any, res: any) => {
         .then(({ settings, roundInfo, newData }) => {
             return res.json({
                 newSettings: newData,
+                settings: {
+                    chat: settings.chat,
+                    colors: settings.colors,
+                },
                 ballsSpawn: settings.ballSpawn,
-                alphaChannel: settings.alphaChannel,
                 channel: settings.channel,
                 hoopLocation: roundInfo.hoopLocation,
                 attempts: roundInfo.shots.length,

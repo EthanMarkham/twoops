@@ -1,16 +1,15 @@
 import React, {
-    useCallback,
     useEffect,
     useMemo,
     useState,
     useRef,
 } from "react";
-import { useGLTF } from "@react-three/drei";
+import { useAspect, useGLTF } from "@react-three/drei";
 import { Triplet, useTrimesh } from "@react-three/cannon";
 import { useFrame } from "@react-three/fiber";
 import { GLTF } from "three/examples/jsm/loaders/GLTFLoader";
 import useStore from "../store";
-import { MeshStandardMaterial } from "three";
+import { Color, MeshStandardMaterial } from "three";
 
 type GLTFResult = GLTF & {
     nodes: {
@@ -41,24 +40,23 @@ const offsetTriplet: (current: Triplet, offset: Triplet) => Triplet = (
 ) => [offset[0] + current[0], offset[1] + current[1], offset[2] + current[2]];
 
 export default function Hoop(_props: any) {
-    const { nodes, materials } = useGLTF(
-        "/assets/models/hoopModel.glb"
-    ) as GLTFResult;
-    const newBackBoardMaterial: MeshStandardMaterial = materials["Material.003"];
-    newBackBoardMaterial.transparent = true;
-    newBackBoardMaterial.opacity = 0.3;
-    newBackBoardMaterial.needsUpdate = true;
-    
     const [isResponding, setRespondingStatus] = useState<boolean>(false);
     const resultsRequested: boolean = useStore(
         (state) => state.roundInfo.results.requested
     );
+
     const hoopPosition = useStore((state) => state.roundInfo.hoopLocation);
+    const colors = useStore((state) => state.settings.colors);
+
     const setResults = useStore((state) => state.setResults);
 
     const [topHit, setTopHit] = useState<number>(0);
     const [bottomHit, setBottomHit] = useState<number>(0);
     const [hitHoop, setHitHoop] = useState<boolean>(false);
+
+    const { nodes, materials } = useGLTF(
+        "/assets/models/hoopModel.glb"
+    ) as GLTFResult;
 
     const results = useMemo(
         () => ({
@@ -68,8 +66,6 @@ export default function Hoop(_props: any) {
         [topHit, bottomHit, hitHoop]
     );
 
-
-    
     //do i need to promise to ensure it runs in order?
     //push results up state when requested. is there better pattern for this?
     useEffect(() => {
@@ -115,8 +111,6 @@ export default function Hoop(_props: any) {
         [hoopPosition, nodes]
     );
 
-    //I THINK I AM ABLE SUPPOSED TO GROUP THESE INTO COMPLEX SHAPE???
-
     //collison box for hoop
     const [, hoopAPI] = useTrimesh(() => ({
         type: "Static",
@@ -130,8 +124,7 @@ export default function Hoop(_props: any) {
                 ([0, 0, 0] as ArrayLike<number>),
         ],
         material: { friction: 1, restitution: 0.2 },
-        allowSleep: false
-
+        allowSleep: false,
     }));
 
     //top hit collision tracker
@@ -146,8 +139,7 @@ export default function Hoop(_props: any) {
             nodes.BasketTrigger_1!.geometry!.index!.array ||
                 ([0, 0, 0] as ArrayLike<number>),
         ],
-        allowSleep: false
-
+        allowSleep: false,
     }));
 
     //bottom hit collision tracker
@@ -162,8 +154,7 @@ export default function Hoop(_props: any) {
             nodes.BasketTrigger_2!.geometry!.index!.array ||
                 ([0, 0, 0] as ArrayLike<number>),
         ],
-        allowSleep: false
-
+        allowSleep: false,
     }));
 
     //SET NEW HITBOX POSITIONS WITH API WHEN HOOP MOVES
@@ -175,14 +166,25 @@ export default function Hoop(_props: any) {
         );
     }, [hitbox]);
 
+    const backboardMesh = useRef<MeshStandardMaterial>();
+    useFrame(() => {
+        let newColor = new Color(colors.backboard);
+        if (
+            backboardMesh.current &&
+            backboardMesh.current.color.toArray().join() !==
+                newColor.toArray().join()
+        ) {
+            console.log("setting backboard color");
+            backboardMesh.current.color.set(new Color(colors.backboard));
+            backboardMesh.current.needsUpdate = true;
+        }
+    });
+
     return (
         <group position={hoopPosition}>
-            <mesh
-                castShadow
-                receiveShadow
-                geometry={nodes.Plane.geometry}
-                material={newBackBoardMaterial}
-            />
+            <mesh castShadow receiveShadow geometry={nodes.Plane.geometry}>
+                <meshStandardMaterial ref={backboardMesh} />
+            </mesh>
             <mesh
                 castShadow
                 receiveShadow

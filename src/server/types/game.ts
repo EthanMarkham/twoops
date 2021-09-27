@@ -65,6 +65,24 @@ export interface ChatSettings {
     firstTryMessage: string;
 }
 
+    
+export interface ChatSettings {
+    responseEnabled: boolean;
+    delay: number;
+    shotAcknowledged: string;
+    bucketResponse: string;
+    brickResponse: string;
+    airballResponse: string;
+    inProgressMessage: string;
+    firstTryMessage: string;
+}
+
+export interface ColorSettings {
+    background: string;
+    backboard: string;
+    
+}
+
 //MODULES
 export interface GameManager {
     setAutoResetTimer(channel: string, roundID: ObjectId): void;
