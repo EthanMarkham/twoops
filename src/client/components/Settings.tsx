@@ -32,7 +32,7 @@ const SettingsPanel = ({ style }: SettingsProps) => {
     const [chatCopy, setChatCopy] = useState<ChatInfo>(settings.chat); //copy context to state
     const [editableText, setEditable] = useState<string[]>([]);
 
-    useEffect(() => {
+    const updateChat = useCallback(() => {
         setChatCopy(settings.chat);
         setEditable(
             Object.keys(chatCopy).filter(
@@ -40,7 +40,10 @@ const SettingsPanel = ({ style }: SettingsProps) => {
             )
         );
     }, [settings.chat]);
+    useEffect(() => {updateChat}, [updateChat]);
 
+
+    
     const saveUpdates = useCallback(() => {
         updateSettings({
             ...settings,
@@ -59,17 +62,10 @@ const SettingsPanel = ({ style }: SettingsProps) => {
         [chatCopy, editableText]
     );
 
-    useEffect(() => {
-        console.log(editableText);
-    }, [editableText]);
     return (
         <AnimatedContainer style={style}>
             <NavBar>
-                <CancelButton
-                    onClick={() => {
-                        togglePanel();
-                    }}
-                />
+                <CancelButton onClick={togglePanel} />
             </NavBar>
             <Body>
                 <SettingsTable>
@@ -93,12 +89,31 @@ const SettingsPanel = ({ style }: SettingsProps) => {
                         />
                     ))}
                 </SettingsTable>
+                <SettingsTable>
+                    <TableHeader>Colors</TableHeader>
+                    {editableText.map((k, i) => (
+                        <SettingsInput
+                            key={`input${i}`}
+                            col={i % 2}
+                            row={1 + Math.ceil((i + 1) / 2)}
+                            label={k}
+                            text={
+                                typeof chatCopy[k as keyof ChatInfo] ===
+                                "string"
+                                    ? (chatCopy[k as keyof ChatInfo] as string)
+                                    : "error"
+                            }
+                            audioIsEnabled={false}
+                            setText={(value: string) => {
+                                setText(value, k);
+                            }}
+                        />
+                    ))}
+                </SettingsTable>
             </Body>
 
             <Footer>
-                <SaveButton onClick={() => saveUpdates()}>
-                    UPDATE SETTINGS
-                </SaveButton>
+                <SaveButton onClick={saveUpdates}>UPDATE SETTINGS</SaveButton>
             </Footer>
         </AnimatedContainer>
     );

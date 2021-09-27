@@ -122,7 +122,6 @@ const GameMessages = (props: any) => {
                     )}
                     {item && <BucketLabel style={style}>BUCKET</BucketLabel>}
                     */}
-                   
                 </InfoBox>
             ))}
         </Wrapper>

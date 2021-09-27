@@ -1,15 +1,10 @@
-import React, {
-    useEffect,
-    useMemo,
-    useState,
-    useRef,
-} from "react";
-import { useAspect, useGLTF } from "@react-three/drei";
-import { Triplet, useTrimesh } from "@react-three/cannon";
+import React, { useEffect, useMemo, useState, useRef } from "react";
+import { useGLTF } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { GLTF } from "three/examples/jsm/loaders/GLTFLoader";
 import useStore from "../store";
-import { Color, MeshStandardMaterial } from "three";
+import { Color, MeshStandardMaterial, Mesh } from "three";
+import useHoopHitboxes from "../hooks/useHoopHitboxes";
 
 type GLTFResult = GLTF & {
     nodes: {
@@ -28,163 +23,57 @@ type GLTFResult = GLTF & {
     };
 };
 
-interface HitBoxPositions {
-    top: Triplet;
-    bottom: Triplet;
-    main: Triplet;
-}
-
-const offsetTriplet: (current: Triplet, offset: Triplet) => Triplet = (
-    current,
-    offset = [0, 0, 0]
-) => [offset[0] + current[0], offset[1] + current[1], offset[2] + current[2]];
-
 export default function Hoop(_props: any) {
-    const [isResponding, setRespondingStatus] = useState<boolean>(false);
-    const resultsRequested: boolean = useStore(
-        (state) => state.roundInfo.results.requested
-    );
-
-    const hoopPosition = useStore((state) => state.roundInfo.hoopLocation);
-    const colors = useStore((state) => state.settings.colors);
-
-    const setResults = useStore((state) => state.setResults);
-
-    const [topHit, setTopHit] = useState<number>(0);
-    const [bottomHit, setBottomHit] = useState<number>(0);
-    const [hitHoop, setHitHoop] = useState<boolean>(false);
 
     const { nodes, materials } = useGLTF(
         "/assets/models/hoopModel.glb"
     ) as GLTFResult;
 
-    const results = useMemo(
-        () => ({
-            success: !!(topHit !== 0 && bottomHit !== 0 && topHit < bottomHit),
-            isAirball: !hitHoop,
-        }),
-        [topHit, bottomHit, hitHoop]
+    const [results, resetHits] = useHoopHitboxes(nodes);
+
+    const [isResponding, setRespondingStatus] = useState<boolean>(false);
+
+    const resultsRequested: boolean = useStore(
+        (state) => state.roundInfo.results.requested
     );
 
-    //do i need to promise to ensure it runs in order?
-    //push results up state when requested. is there better pattern for this?
+    const hoopPosition = useStore((state) => state.roundInfo.hoopLocation);
+
+    const colors = useStore((state) => state.settings.colors);
+
+    const setResults = useStore((state) => state.setResults);
+
     useEffect(() => {
         if (resultsRequested && !isResponding) {
             setRespondingStatus(true);
             setResults(results, () => {
-                setTopHit(0);
-                setBottomHit(0);
+                resetHits();
                 setRespondingStatus(false);
-                setHitHoop(false);
             });
         }
     }, [resultsRequested, results, isResponding]);
 
-    //memotize hitbox positions to move whenever hoop does. Again probably way stuff I could do.
-    const hitbox: HitBoxPositions = useMemo<HitBoxPositions>(
-        () => ({
-            top: offsetTriplet(
-                [
-                    nodes.BasketTrigger_1.position.x,
-                    nodes.BasketTrigger_1.position.y,
-                    nodes.BasketTrigger_1.position.z,
-                ],
-                hoopPosition
-            ),
-            bottom: offsetTriplet(
-                [
-                    nodes.BasketTrigger_2.position.x,
-                    nodes.BasketTrigger_2.position.y,
-                    nodes.BasketTrigger_2.position.z,
-                ],
-                hoopPosition
-            ),
-            main: offsetTriplet(
-                [
-                    nodes.HitBox.position.x,
-                    nodes.HitBox.position.y,
-                    nodes.HitBox.position.z,
-                ],
-                hoopPosition
-            ),
-        }),
-        [hoopPosition, nodes]
+    
+    //backboard material
+    const backboardMaterial = useMemo(
+        (): MeshStandardMaterial =>
+            new MeshStandardMaterial({ color: new Color(colors.backboard) }),
+        [colors.backboard]
     );
-
-    //collison box for hoop
-    const [, hoopAPI] = useTrimesh(() => ({
-        type: "Static",
-        position: hitbox.main,
-        mass: 1,
-        onCollide: () => setHitHoop(true),
-        args: [
-            nodes.HitBox.geometry!.attributes!.position!.array ||
-                ([0, 0, 0] as ArrayLike<number>),
-            nodes.HitBox.geometry!.index!.array ||
-                ([0, 0, 0] as ArrayLike<number>),
-        ],
-        material: { friction: 1, restitution: 0.2 },
-        allowSleep: false,
-    }));
-
-    //top hit collision tracker
-    const [, topBucketAPI] = useTrimesh(() => ({
-        type: "Static",
-        position: hitbox.top,
-        collisionResponse: 0,
-        onCollide: () => setTopHit(new Date().getTime()),
-        args: [
-            nodes.BasketTrigger_1!.geometry!.attributes!.position!.array ||
-                ([0, 0, 0] as ArrayLike<number>),
-            nodes.BasketTrigger_1!.geometry!.index!.array ||
-                ([0, 0, 0] as ArrayLike<number>),
-        ],
-        allowSleep: false,
-    }));
-
-    //bottom hit collision tracker
-    const [, bottomBucketAPI] = useTrimesh(() => ({
-        type: "Static",
-        position: offsetTriplet(hitbox.bottom, [0, -2, 0]),
-        collisionResponse: 0,
-        onCollide: () => setBottomHit(new Date().getTime()),
-        args: [
-            nodes.BasketTrigger_2!.geometry!.attributes!.position!.array ||
-                ([0, 0, 0] as ArrayLike<number>),
-            nodes.BasketTrigger_2!.geometry!.index!.array ||
-                ([0, 0, 0] as ArrayLike<number>),
-        ],
-        allowSleep: false,
-    }));
-
-    //SET NEW HITBOX POSITIONS WITH API WHEN HOOP MOVES
-    useEffect(() => {
-        hoopAPI.position.set(...hitbox.main);
-        topBucketAPI.position.set(...offsetTriplet(hitbox.top, [0, 3, -0]));
-        bottomBucketAPI.position.set(
-            ...offsetTriplet(hitbox.bottom, [0, -2, -0])
-        );
-    }, [hitbox]);
-
-    const backboardMesh = useRef<MeshStandardMaterial>();
+    const backboard = useRef<Mesh>();
     useFrame(() => {
-        let newColor = new Color(colors.backboard);
-        if (
-            backboardMesh.current &&
-            backboardMesh.current.color.toArray().join() !==
-                newColor.toArray().join()
-        ) {
-            console.log("setting backboard color");
-            backboardMesh.current.color.set(new Color(colors.backboard));
-            backboardMesh.current.needsUpdate = true;
+        if (backboard.current) {
+            let m = backboard.current.material as MeshStandardMaterial;
+            if (!m.color.equals(backboardMaterial.color)) {
+                backboard.current.material = backboardMaterial;
+                console.log("setting backboard mat");
+            }
         }
     });
 
     return (
         <group position={hoopPosition}>
-            <mesh castShadow receiveShadow geometry={nodes.Plane.geometry}>
-                <meshStandardMaterial ref={backboardMesh} />
-            </mesh>
+            <mesh ref={backboard} geometry={nodes.Plane.geometry} />
             <mesh
                 castShadow
                 receiveShadow

@@ -26,7 +26,7 @@ export const App: React.FC = () => {
         from: { x: -100 },
         enter: { x: 0 },
         leave: { x: -100 },
-        config: springConfig.wobbly,
+        config: springConfig.gentle,
     });
 
     return (
@@ -45,7 +45,9 @@ export const App: React.FC = () => {
                                 isShowing && (
                                     <AnimatedPanel
                                         style={{
-                                            transform: x.to(x => `translate(${x}%)`),
+                                            transform: x.to(
+                                                (x) => `translate(${x}%)`
+                                            ),
                                         }}
                                     />
                                 )
