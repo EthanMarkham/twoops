@@ -18,7 +18,7 @@ export interface LoggedShotResponse {
     attempts: number;
     roundID: ObjectId | string;
 }
-export interface AggregatedResponse extends DataRequest {
+export interface UserDataResponse extends DataRequest {
     newData: boolean;
     settings: GameSetting;
     roundInfo: RoundInfo;
@@ -65,7 +65,6 @@ export interface ChatSettings {
     firstTryMessage: string;
 }
 
-    
 export interface ChatSettings {
     responseEnabled: boolean;
     delay: number;
@@ -80,7 +79,6 @@ export interface ChatSettings {
 export interface ColorSettings {
     background: string;
     backboard: string;
-    
 }
 
 //MODULES
@@ -89,9 +87,10 @@ export interface GameManager {
     pendingAutoCancelRoundEvents: Map<string, NodeJS.Timeout>;
     pendingShots: Map<string, PendingShot>;
     delayedGames: Map<string, boolean>;
+    setShotAcknowledgment(channel: string, roundID: ObjectId): void;
     addListeners: () => void;
-    getSettings: (user: string) => Promise<SettingsInfoResponse>;
-    getAggregatedData: (user: string) => Promise<AggregatedResponse>;
+    initChatDelay(channel: string, chat: string, delay: number): void;
+    cancelAutoCancel(channel: string): void;
     logResult: (
         channel: string,
         shot: ShotResult

@@ -1,58 +1,60 @@
-//Feel like this file is breaking SRP. Planning to redesign.
-
-import { SocketAPI } from "./webSocket";
-import { TwitchBot } from "./twitchBot";
-import { Collection, ObjectId } from "mongodb";
+import { settings } from "cluster";
+import { Collection, UpdateResult } from "mongodb";
 import GameSetting from "../models/gameSettings";
 import RoundInfo from "../models/roundInfo";
 import {
     ShotResult,
-    AggregatedResponse,
-    PendingShot,
-    GameManager,
+    UserDataResponse,
     SettingsInfoResponse,
-    LoggedShotResponse,
+    Boundaries,
 } from "../types/game";
-import { getResponseMessage } from "../utils";
-import { MongoAPI } from "../types/mongo";
+import { MongoAPI, GameDAO } from "../types/mongo";
 
-const mongoAPI: MongoAPI = require("./mongo");
-const socketAPI: SocketAPI = require("./webSocket");
-const twitchBOT: TwitchBot = require("./twitchBot");
+const mongoAPI: MongoAPI = require("../modules/mongo");
 
-const gameManager: GameManager = (module.exports = {
-    pendingShots: new Map<string, PendingShot>(),
-    pendingAutoCancelRoundEvents: new Map<string, NodeJS.Timeout>(),
-    delayedGames: new Map<string, boolean>(),
-    addListeners() {
-        const {
-            joinListener,
-            leaveListener,
-            acknowledgeShotListener,
-            chatShotListener,
-        } = require("../listeners/game");
-        socketAPI.addListener(joinListener);
-        socketAPI.addListener(leaveListener);
-        socketAPI.addListener(acknowledgeShotListener);
-        twitchBOT.addListener(chatShotListener);
+const gameDAO: GameDAO = (module.exports = {
+    collections: {
+        roundInfo: null,
+        settings: null,
     },
-    getSettings(user: string): Promise<SettingsInfoResponse> {
-        return new Promise((resolve) => {
-            if (mongoAPI.db == null) throw new Error("No database Connection");
+    verifyDBConnection() {
+        if (mongoAPI.db == null) throw new Error("No database Connection");
+        if (
+            gameDAO.collections.roundInfo == null ||
+            gameDAO.collections.settings == null
+        )
+            throw new Error("No Collection Set");
+    },
+    setCollections() {
+        if (mongoAPI.db == null) throw new Error("No database Connection");
 
-            let newSettings = false;
-            let settingsCollection: Collection = mongoAPI.db.collection(
+        gameDAO.collections = {
+            roundInfo: mongoAPI.db.collection(
+                process.env.ROUND_COLLECTION_NAME || "roundInfo"
+            ),
+            settings: mongoAPI.db.collection(
                 process.env.SETTINGS_COLLECTION_NAME || "settings"
-            );
-
-            settingsCollection
-                .findOne({ channel: user })
+            ),
+        };
+    },
+    createSettings(channel: string): GameSetting {
+        if (!gameDAO.collections.settings)
+            throw new Error("No Settings Collection Found.");
+        let settings = new GameSetting(channel);
+        gameDAO.collections.settings.insertOne(settings);
+        return settings;
+    },
+    getSettings(channel: string): Promise<SettingsInfoResponse> {
+        return new Promise((resolve) => {
+            if (!gameDAO.collections.settings)
+                throw new Error("No Settings Collection Found.");
+            let newSettings = false;
+            gameDAO.collections.settings
+                .findOne({ channel: channel })
                 .then((settings: any) => {
-                    //create new settings if none and mark new user
+                    //create new settings if one not found?
                     if (!settings) {
-                        console.log("Creating new settings for " + user);
-                        settings = new GameSetting(user);
-                        settingsCollection.insertOne(settings);
+                        settings = gameDAO.createSettings(channel);
                         newSettings = true;
                     }
                     resolve({
@@ -62,13 +64,13 @@ const gameManager: GameManager = (module.exports = {
                 });
         });
     },
-    getAggregatedData(channel: string): Promise<AggregatedResponse> {
+    getUserData(channel: string): Promise<UserDataResponse> {
         return new Promise((resolve) => {
-            if (mongoAPI.db == null) throw new Error("No database Connection");
-            let settingsCollection: Collection = mongoAPI.db.collection(
-                process.env.SETTINGS_COLLECTION_NAME || "settings"
-            );
-            settingsCollection
+            if (!gameDAO.collections.roundInfo)
+                throw new Error("No RoundInfo Collection Found.");
+            if (!gameDAO.collections.settings)
+                throw new Error("No Settings Collection Found.");
+            gameDAO.collections.settings
                 .aggregate([
                     {
                         $lookup: {
@@ -93,6 +95,7 @@ const gameManager: GameManager = (module.exports = {
                     let roundInfo: RoundInfo;
                     let settings: GameSetting;
                     let newUser: boolean = false;
+
                     if (data.length != 0) {
                         settings = data[0] as any as GameSetting;
                     } else {
@@ -126,6 +129,53 @@ const gameManager: GameManager = (module.exports = {
                         roundInfo: roundInfo,
                         newData: newUser,
                     });
+                });
+        });
+    },
+    createRound(channel: string, hoopsSpawn: Boundaries): Promise<RoundInfo> {
+        return new Promise((resolve) => {
+            if (!gameDAO.collections.roundInfo)
+                throw new Error("No RoundInfo Collection Found.");
+            let roundInfo = new RoundInfo(channel, hoopsSpawn);
+            gameDAO.collections.roundInfo
+                .insertOne(roundInfo)
+                .then((result) => {
+                    roundInfo._id = result.insertedId;
+                    resolve(roundInfo);
+                });
+        });
+    },
+    addShot(channel: string, shot: ShotResult): Promise<UpdateResult> {
+        if (!gameDAO.collections.roundInfo)
+            throw new Error("No RoundInfo Collection Found.");
+        return gameDAO.collections.roundInfo.updateOne(
+            { channel: channel, isComplete: false },
+            {
+                $push: { shots: shot },
+                $set: {
+                    isComplete: shot.result == "SUCCESS",
+                    inProgress: false,
+                },
+            }
+        );
+    },
+});
+
+/*
+    getRound(channel: string): Promise<any> {
+        return new Promise((resolve) => {
+            let collection: Collection = mongoAPI.db.collection(
+                process.env.ROUND_COLLECTION_NAME || "roundInfo"
+            );
+            collection
+                .find({ channel: channel, isComplete: false })
+                .toArray()
+                .then((data) => {
+                    if (data.length === 0) throw new Error("No round found");
+                    if (data.length > 1)
+                        throw new Error("Multiple rounds found????");
+
+                    resolve(data[0] as unknown as RoundInfo);
                 });
         });
     },
@@ -218,28 +268,5 @@ const gameManager: GameManager = (module.exports = {
                 });
         });
     },
-    setAutoResetTimer(channel: string, roundID: ObjectId) {
-        let timeout: NodeJS.Timeout = setTimeout(() => {
-            console.log(
-                `auto cancelling shot for ${channel}, roundID: ${roundID}`
-            );
-            mongoAPI.db &&
-                mongoAPI.db
-                    .collection(
-                        process.env.ROUND_COLLECTION_NAME || "roundinfo"
-                    )
-                    .updateOne(
-                        { _id: roundID },
-                        { $set: { inProgress: false } }
-                    );
-            //Can I have an object delete from within itself?????
-            gameManager.pendingAutoCancelRoundEvents.delete(channel);
-        }, 15000);
-        timeout &&
-            gameManager.pendingAutoCancelRoundEvents.set(channel, timeout);
-    },
-    setShotAcknowledgment(channel: string, roundID: ObjectId) {
-        gameManager.pendingShots.delete(channel);
-        gameManager.setAutoResetTimer(channel, roundID);
-    },
-});
+};
+*/

@@ -9,7 +9,7 @@ import { SocketAPI } from "./modules/webSocket";
 import { TwitchBot } from "./modules/twitchBot";
 import { App } from "../client/app";
 import { GameManager } from "./types/game";
-import { MongoAPI } from "./types/mongo";
+import { GameDAO, MongoAPI } from "./types/mongo";
 
 require("dotenv").config();
 
@@ -36,7 +36,10 @@ server.use(express.urlencoded({ extended: true }));
 
 //db connection
 const mongoAPI: MongoAPI = require("./modules/mongo");
-mongoAPI.init();
+const gameDAO: GameDAO = require("./dao/gameDAO");
+mongoAPI.init(() => {
+    mongoAPI.addDAO(gameDAO);
+});
 
 //websocket
 const socketAPI: SocketAPI = require("./modules/webSocket");
@@ -47,7 +50,7 @@ const twitchBot: TwitchBot = require("./modules/twitchBot");
 twitchBot.init();
 
 //GAME MANAGER
-const gameManager: GameManager = require("./modules/game");
+const gameManager: GameManager = require("./modules/gameManager");
 gameManager.addListeners();
 
 //TWITCH AUTH

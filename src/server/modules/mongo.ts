@@ -1,5 +1,5 @@
 import { MongoClient, Collection } from "mongodb";
-import { ENV, MongoAPI } from "../types/mongo";
+import { DAO, ENV, MongoAPI } from "../types/mongo";
 
 require("dotenv").config();
 
@@ -22,7 +22,8 @@ const mongoAPI: MongoAPI = (module.exports = {
     client: new MongoClient(DB_CONN_STRING),
     db: null,
     collections: new Map<string, Collection>(),
-    init() {
+    dao: [],
+    init(callback?: () => void) {
         mongoAPI.client.connect().then(() => {
             mongoAPI.db = mongoAPI.client.db(DB_NAME);
             //add collections
@@ -34,9 +35,16 @@ const mongoAPI: MongoAPI = (module.exports = {
                 SETTINGS_COLLECTION_NAME,
                 mongoAPI.db.collection(SETTINGS_COLLECTION_NAME)
             );
+
+
             console.log(
                 `Successfully connected to database: ${mongoAPI.db.databaseName}`
             );
+            callback && callback();
         });
+    },
+    addDAO(dao: DAO) {
+        mongoAPI.dao.push(dao);
+        dao.setCollections();
     },
 });
