@@ -1,5 +1,4 @@
 import React from "react";
-import styled from "styled-components";
 import AudioIconSVG from "../../../svgComponents/AudioIconSVG";
 import { InputContainer, InputLabel, AudioIconHolder, ChatInput } from "../../../styles/settings";
 

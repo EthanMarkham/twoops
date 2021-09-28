@@ -1,9 +1,5 @@
-import React, { useEffect, useMemo } from "react";
-import {
-    ToggleHolder,
-    ToggleBackground,
-    ToggleSlider,
-} from "../styles/toggle";
+import React, { useMemo } from "react";
+import { ToggleHolder, ToggleBackground, ToggleSlider } from "../styles/toggle";
 
 interface ToggleInputProps {
     toggle: boolean;
@@ -25,7 +21,6 @@ const Toggle = ({ toggle, gridPos, onClick }: ToggleInputProps) => {
         [sliderRef.current, backgroundRef.current]
     );
 
-    useEffect(() => console.log(slideAmount), [slideAmount]);
     return (
         <ToggleHolder toggle={toggle} gridPos={gridPos}>
             <ToggleSlider

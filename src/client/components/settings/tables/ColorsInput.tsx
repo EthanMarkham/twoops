@@ -1,4 +1,3 @@
-
 import React from "react";
 import { ColorInfo } from "../../../store";
 import { SettingsTable, TableHeader } from "../../../styles/settings";

@@ -1,8 +1,7 @@
 import { HexColorPicker } from "react-colorful";
 import { animated } from "react-spring";
 import styled from "styled-components";
-import { scrollbar } from ".";
-
+import { primaryText, scrollbar } from ".";
 
 export const AnimatedContainer = styled(animated.div)`
     position: absolute;
@@ -31,7 +30,6 @@ export const Body = styled.div`
     overflow-y: auto;
 
     ${scrollbar}
-
 `;
 
 export const InputContainer = styled.div<{
@@ -84,8 +82,7 @@ export const ChatInput = styled.textarea`
     grid-row-start: 2;
     height: 80px;
 
-    font-size: 18px;
-    color: #ffffff;
+    ${primaryText}
     overflow-wrap: break-word;
     padding: 0.6em;
 
@@ -95,16 +92,6 @@ export const ChatInput = styled.textarea`
     justify-content: center;
     background: #1d1d1d;
     border-radius: 4px;
-`;
-
-export const ColorPicker = styled(HexColorPicker)`
-    grid-column-start: 1;
-    grid-column-end: 3;
-
-    grid-column: 1 / 3;
-    width: 80% !important;
-    height: 200px !important;
-    margin: auto;
 `;
 
 export const SettingsTable = styled.div`

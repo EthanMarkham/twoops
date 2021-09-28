@@ -9,7 +9,8 @@ export const Container = styled.div<{
     width: fit-content;
     height: 100%;
     color: ${({ isActive }) => (isActive ? "#FFCF11" : "white")};
-    ${({ isActive }) => isActive && "border-bottom: 3px solid #FFCF11"};
+    border-bottom: ${({ isActive }) =>
+        `3px solid ${isActive ? "#FFCF11" : "transparent"} `};
     ${flexCenter}
 `;
 interface NavBarProps {

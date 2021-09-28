@@ -64,3 +64,9 @@ export const flexCenter = `
     align-items: center;
     align-content: center;
 `;
+
+export const primaryText = `
+font-family: Open Sans;
+font-size: 18px;
+color: #ffffff;
+`

@@ -1,7 +1,5 @@
 import React from "react";
 import {
-    AudioIconHolder,
-    ChatInput,
     InputContainer,
     InputLabel,
 } from "../../../styles/settings";

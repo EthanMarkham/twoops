@@ -21,8 +21,8 @@ const Container = styled.div`
 const NavLinkHolder = styled.div`
     padding: 16px;
     height: 85.32px;
-    background: #1d1d1d;
     ${flexCenter}
+    gap: 12px;
 `;
 
 interface NavBarProps {

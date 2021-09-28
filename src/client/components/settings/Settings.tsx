@@ -42,7 +42,7 @@ const SettingsPanel = ({ style }: SettingsProps) => {
 
     const updateChatState = useCallback(
         (value: any, key: string): void => {
-            console.log('setting ' + key + ' to ' + value);
+            //console.log('setting ' + key + ' to ' + value);
             setChatCopy((current) => ({
                 ...current,
                 [key]: value,
@@ -53,7 +53,7 @@ const SettingsPanel = ({ style }: SettingsProps) => {
 
     const updateColorState = useCallback(
         (value: any, key: string): void => {
-            console.log('setting ' + key + ' to ' + value);
+            //console.log('setting ' + key + ' to ' + value);
             setColorCopy((current) => ({
                 ...current,
                 [key]: value,
