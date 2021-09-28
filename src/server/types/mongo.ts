@@ -4,6 +4,7 @@ import {
     Db,
     InsertOneResult,
     UpdateResult,
+    ObjectId,
 } from "mongodb";
 import GameSetting from "../models/gameSettings";
 import RoundInfo from "../models/roundInfo";
@@ -47,4 +48,5 @@ export interface GameDAO extends DAO {
     addShot(channel: string, shot: ShotResult): Promise<UpdateResult>;
     createRound(channel: string, hoopsSpawn: Boundaries): Promise<RoundInfo>;
     createSettings(channel: string): GameSetting;
+    setInProgress(roundID: ObjectId, value: boolean): void;
 }

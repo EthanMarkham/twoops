@@ -1,5 +1,5 @@
 import { settings } from "cluster";
-import { Collection, UpdateResult } from "mongodb";
+import { ObjectId, UpdateResult } from "mongodb";
 import GameSetting from "../models/gameSettings";
 import RoundInfo from "../models/roundInfo";
 import {
@@ -64,6 +64,7 @@ const gameDAO: GameDAO = (module.exports = {
                 });
         });
     },
+    //trim this func
     getUserData(channel: string): Promise<UserDataResponse> {
         return new Promise((resolve) => {
             if (!gameDAO.collections.roundInfo)
@@ -157,6 +158,14 @@ const gameDAO: GameDAO = (module.exports = {
                     inProgress: false,
                 },
             }
+        );
+    },
+    setInProgress(roundID: ObjectId, value: boolean): void {
+        if (!gameDAO.collections.roundInfo)
+            throw new Error("No RoundInfo Collection Found.");
+        gameDAO.collections.roundInfo.updateOne(
+            { _id: roundID },
+            { $set: { inProgress: value } }
         );
     },
 });

@@ -10,9 +10,8 @@ import {
     UserDataResponse,
 } from "../types/game";
 import { getResponseMessage, getShot } from "../utils";
-import { GameDAO, MongoAPI } from "../types/mongo";
+import { GameDAO } from "../types/mongo";
 
-const mongoAPI: MongoAPI = require("./mongo");
 const socketAPI = require("../modules/webSocket");
 const twitchAPI = require("../modules/twitchBot");
 const gameDAO: GameDAO = require("../dao/gameDAO");
@@ -49,14 +48,7 @@ export const acknowledgeShotListener: SocketListener = {
         if (pendingShot.chat)
             require("../modules/twitchBot").say(pendingShot.chat, channel);
 
-        if (mongoAPI.db == null) throw new Error("No database Connection");
-        mongoAPI.db
-            .collection(process.env.ROUND_COLLECTION_NAME || "roundinfo")
-            .updateOne(
-                { _id: pendingShot.roundID },
-                { $set: { inProgress: true } }
-            );
-
+        gameDAO.setInProgress(pendingShot.roundID, true);
         gameManager.setShotAcknowledgment(channel, pendingShot.roundID);
     },
 };
@@ -177,20 +169,11 @@ const gameManager: GameManager = (module.exports = {
             console.log(
                 `auto cancelling shot for ${channel}, roundID: ${roundID}`
             );
-            mongoAPI.db &&
-                mongoAPI.db
-                    .collection(
-                        process.env.ROUND_COLLECTION_NAME || "roundinfo"
-                    )
-                    .updateOne(
-                        { _id: roundID },
-                        { $set: { inProgress: false } }
-                    );
+            gameDAO.setInProgress(roundID, false);
             //Can I have an object delete from within itself?????
             gameManager.pendingAutoCancelRoundEvents.delete(channel);
         }, 15000);
-        timeout &&
-            gameManager.pendingAutoCancelRoundEvents.set(channel, timeout);
+        gameManager.pendingAutoCancelRoundEvents.set(channel, timeout);
     },
     setShotAcknowledgment(channel: string, roundID: ObjectId) {
         gameManager.pendingShots.delete(channel);

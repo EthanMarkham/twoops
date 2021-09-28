@@ -9,6 +9,7 @@ const router = express.Router();
 const gameManager: GameManager = require("../modules/gameManager");
 const twitchBot: TwitchBot = require("../modules/twitchBot");
 const gameDAO: GameDAO = require("../dao/gameDAO");
+
 //routes
 router.get("/init", verifyUser, async (req: any, res: any) => {
     twitchBot.joinChannel(req.session.passport.user.data[0].login); //join twitch chat for user
