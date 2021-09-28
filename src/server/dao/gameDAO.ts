@@ -64,6 +64,14 @@ const gameDAO: GameDAO = (module.exports = {
                 });
         });
     },
+    updateSettings(settings: GameSetting): void {
+        if (!gameDAO.collections.settings)
+            throw new Error("No Settings Collection Found.");
+        gameDAO.collections.settings.updateOne(
+            { channel: settings.channel },
+            { $set: settings}
+        );
+    },
     //trim this func
     getUserData(channel: string): Promise<UserDataResponse> {
         return new Promise((resolve) => {

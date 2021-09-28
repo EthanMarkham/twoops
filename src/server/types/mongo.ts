@@ -44,6 +44,7 @@ export interface DAO {
 export interface GameDAO extends DAO {
     getSettings(channel: string): Promise<SettingsInfoResponse>;
     createSettings(channel: string): GameSetting;
+    updateSettings(settings: GameSetting): void;
     getUserData(channel: string): Promise<UserDataResponse>;
     addShot(channel: string, shot: ShotResult): Promise<UpdateResult>;
     createRound(channel: string, hoopsSpawn: Boundaries): Promise<RoundInfo>;

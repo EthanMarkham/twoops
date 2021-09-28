@@ -48,7 +48,7 @@ export interface SettingsInfo {
     channel: string;
     ballSpawn: Triplet;
     chat: ChatInfo;
-    colors: ColorInfo
+    colors: ColorInfo;
 }
 
 interface ResultMessage {
@@ -92,8 +92,8 @@ const DEFAULTS: {
         },
         colors: {
             background: "",
-            backboard: ""
-        }
+            backboard: "",
+        },
     },
     ROUND: {
         id: v4(),
@@ -176,9 +176,20 @@ const useStore = create<Store>((set, get) => ({
         set((state) => ({
             ...state,
             settings: {
-                ...data
+                ...data,
             },
         }));
+        //remove extra data
+        let dataCopy = data as any;
+        delete dataCopy.showingPanel;
+
+        fetch("/api/updateSettings", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(dataCopy),
+        });
     },
     setResults({ success, isAirball }, callback) {
         const copy: Store = get();

@@ -23,17 +23,20 @@ interface GameMessage {
     showing: boolean;
     user: string;
     state: string;
+    attempts: number;
 }
 
 const getMessage = (
-    isShowing: boolean,
+    showing: boolean,
     user: string | null,
     success: boolean,
-    isAirball: boolean
+    isAirball: boolean,
+    attempts: number,
 ): GameMessage => ({
-    showing: isShowing,
+    showing,
     user: user ? user : "",
     state: success ? WIN : isAirball ? AIRBALL : BRICK,
+    attempts
 });
 
 const GameMessages = (props: any) => {
@@ -44,18 +47,18 @@ const GameMessages = (props: any) => {
     const attempts = useStore((state) => state.roundInfo.attempts);
 
     const [message, setMessage] = useState<GameMessage>(
-        getMessage(false, "", false, false)
+        getMessage(false, "", false, false, 0)
     );
 
     useEffect(() => {
         if (showing) {
-            setMessage(getMessage(true, user, success, isAirball));
+            setMessage(getMessage(true, user, success, isAirball, attempts + 1));
             setTimeout(
-                () => setMessage(getMessage(false, "", false, false)),
+                () => setMessage(getMessage(false, "", false, false, 0)),
                 5000
             );
         }
-    }, [showing, user, success, isAirball]);
+    }, [showing, user, success, isAirball, attempts]);
 
     const messageTransition = useTransition(message, {
         from: { opacity: 0 },
@@ -68,7 +71,7 @@ const GameMessages = (props: any) => {
         config: config.molasses,
     });
 
-    const roundTransition = useTransition(message.showing, {
+    const roundTransition = useTransition(message, {
         from: { opacity: 0 },
         enter: { opacity: 1 },
         leave: { opacity: 0 },
@@ -108,10 +111,10 @@ const GameMessages = (props: any) => {
             )}
 
             {/* <BucketLabel src="/assets/img/bucketLabel.png" /> */}
-            {roundTransition((style: any, item: boolean) => (
+            {roundTransition((style: any, item: GameMessage) => (
                 <InfoBox>
-                    {item && (
-                        <AttemptCount style={style}>{attempts}</AttemptCount>
+                    {item.showing && (
+                        <AttemptCount style={style}>{item.attempts}</AttemptCount>
                     )}
                     <ShotLabel>!SHOT</ShotLabel>
                     {/* 

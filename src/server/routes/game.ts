@@ -1,3 +1,4 @@
+import GameSetting from "../models/gameSettings";
 import { TwitchBot } from "../modules/twitchBot";
 import { GameManager, ShotResult } from "../types/game";
 import { GameDAO } from "../types/mongo";
@@ -40,6 +41,13 @@ router.post("/logShot/", verifyUser, async (req: any, res: any) => {
         .then((response) => {
             return res.json(response);
         });
+});
+
+router.post("/updateSettings/", verifyUser, async (req: any, res: any) => {
+    let newSettings: GameSetting = req.body;
+    gameDAO.updateSettings(newSettings);
+    return res.status(200).send('Updated');
+
 });
 
 function verifyUser(req: any, res: any, next: any) {
