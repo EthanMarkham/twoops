@@ -17,7 +17,7 @@ export const ToggleHolder = styled.label<{
     position: relative;
     display: inline-block;
     width: 125%;
-    height: 60px;
+    height: 50px;
 
     border-radius: 15px;
     transition: 0.4s;

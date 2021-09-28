@@ -38,15 +38,17 @@ export interface ChatInfo {
     bucketResponse: string;
 }
 
+export interface ColorInfo {
+    background: string;
+    backboard: string;
+}
+
 export interface SettingsInfo {
     showingPanel: boolean;
     channel: string;
     ballSpawn: Triplet;
     chat: ChatInfo;
-    colors: {
-        background: string;
-        backboard: string;
-    }
+    colors: ColorInfo
 }
 
 interface ResultMessage {

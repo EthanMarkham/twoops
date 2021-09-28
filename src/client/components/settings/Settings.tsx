@@ -1,11 +1,12 @@
 import React, { useMemo, useState, useEffect, useCallback } from "react";
 import { SpringValue } from "react-spring";
-import useStore, { ChatInfo } from "../../store";
+import useStore, { ChatInfo, ColorInfo } from "../../store";
 
-import NavBar from "./NavBar";
-import ChatInput from "./ChatInput";
-import Footer from "./Footer";
+import ChatInput from "./tables/ChatInput";
 import { AnimatedContainer, Body } from "../../styles/settings";
+import NavBar from "./components/NavBar";
+import Footer from "./components/Footer";
+import ColorsInput from "./tables/ColorsInput";
 
 interface SettingsProps {
     style: {
@@ -25,7 +26,8 @@ const SettingsPanel = ({ style }: SettingsProps) => {
     const updateSettings = useStore((state) => state.updateSettings);
 
     const [chatCopy, setChatCopy] = useState<ChatInfo>(settings.chat); //copy context to state
-    const [sectionINDEX, setSectionIndex] = useState<SECTION>(SECTION.CHAT);
+    const [colorCopy, setColorCopy] = useState<ColorInfo>(settings.colors); //copy context to state
+    const [sectionIndex, setSectionIndex] = useState<SECTION>(SECTION.CHAT);
 
     useEffect(() => setChatCopy(settings.chat), [settings.chat]);
 
@@ -33,9 +35,10 @@ const SettingsPanel = ({ style }: SettingsProps) => {
         updateSettings({
             ...settings,
             chat: chatCopy,
+            colors: colorCopy,
         });
         togglePanel();
-    }, [chatCopy]);
+    }, [chatCopy, colorCopy]);
 
     const updateChatState = useCallback(
         (value: any, key: string): void => {
@@ -48,11 +51,22 @@ const SettingsPanel = ({ style }: SettingsProps) => {
         [chatCopy]
     );
 
+    const updateColorState = useCallback(
+        (value: any, key: string): void => {
+            console.log('setting ' + key + ' to ' + value);
+            setColorCopy((current) => ({
+                ...current,
+                [key]: value,
+            }));
+        },
+        [colorCopy]
+    );
     return (
         <AnimatedContainer style={style}>
-            <NavBar index={sectionINDEX} onCancel={() => togglePanel()} />
+            <NavBar index={sectionIndex} onCancel={() => togglePanel()} />
             <Body>
                 <ChatInput chatCopy={chatCopy} updateState={updateChatState} />
+                <ColorsInput colorCopy={colorCopy} updateState={updateColorState} />
             </Body>
             <Footer onSave={() => saveUpdates()} />
         </AnimatedContainer>

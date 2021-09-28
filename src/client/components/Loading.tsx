@@ -17,7 +17,7 @@ const Loading = (props: any) => {
     });
 
     return (
-        <PageHolder flex={true} center={true}>
+        <PageHolder center={true}>
             <AnimatedWrapper style={spin}>
                 <Img src="/assets/img/bucketsLogo.png" />
             </AnimatedWrapper>

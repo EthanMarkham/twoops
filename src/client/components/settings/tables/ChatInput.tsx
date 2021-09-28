@@ -1,28 +1,8 @@
 import React from "react";
-import styled from "styled-components";
-import { ChatInfo } from "../../store";
-import BooleanInput from "./BooleanInput";
-import TextInput from "./TextInput";
-
-const SettingsTable = styled.div`
-    display: grid;
-    position: relative;
-    grid-template-columns: 1fr 1fr;
-    grid-auto-rows: min-content;
-    height: fit-content;
-    width: 100%;
-    gap: 20px;
-    border-bottom: 1px solid #ffffff50;
-    padding-bottom: 50px;
-`;
-const TableHeader = styled.div`
-    grid-column: 1 / 3;
-    grid-row: 1;
-    display: flex;
-    align-items: flex-end;
-    height: 40px;
-    color: white;
-`;
+import { ChatInfo } from "../../../store";
+import { SettingsTable, TableHeader } from "../../../styles/settings";
+import BooleanInput from "../inputs/BooleanInput";
+import TextInput from "../inputs/TextInput";
 
 interface TableSectionInputProps {
     chatCopy: ChatInfo;

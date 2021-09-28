@@ -48,6 +48,7 @@
         "passport": "^0.4.1",
         "passport-oauth": "^1.0.0",
         "react": "^18.0.0-alpha-1314299c7-20210901",
+        "react-colorful": "^5.4.0",
         "react-dom": "^18.0.0-alpha-1314299c7-20210901",
         "react-spring": "^9.2.4",
         "react-three": "^0.9.7",

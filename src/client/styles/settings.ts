@@ -1,5 +1,8 @@
+import { HexColorPicker } from "react-colorful";
 import { animated } from "react-spring";
 import styled from "styled-components";
+import { scrollbar } from ".";
+
 
 export const AnimatedContainer = styled(animated.div)`
     position: absolute;
@@ -23,9 +26,12 @@ export const Body = styled.div`
     width: calc(100% - 40px);
     margin: 20px;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     overflow-x: hidden;
     overflow-y: auto;
+
+    ${scrollbar}
+
 `;
 
 export const InputContainer = styled.div<{
@@ -76,15 +82,47 @@ export const ChatInput = styled.textarea`
     grid-column-end: 3;
 
     grid-row-start: 2;
+    height: 80px;
 
     font-size: 18px;
     color: #ffffff;
     overflow-wrap: break-word;
     padding: 0.6em;
-    
+
+    ${scrollbar}
     display: flex;
     align-items: center;
     justify-content: center;
     background: #1d1d1d;
     border-radius: 4px;
+`;
+
+export const ColorPicker = styled(HexColorPicker)`
+    grid-column-start: 1;
+    grid-column-end: 3;
+
+    grid-column: 1 / 3;
+    width: 80% !important;
+    height: 200px !important;
+    margin: auto;
+`;
+
+export const SettingsTable = styled.div`
+    display: grid;
+    position: relative;
+    grid-template-columns: 1fr 1fr;
+    grid-auto-rows: min-content;
+    height: fit-content;
+    width: 100%;
+    gap: 20px;
+    border-bottom: 1px solid #ffffff50;
+    padding-bottom: 50px;
+`;
+export const TableHeader = styled.div`
+    grid-column: 1 / 3;
+    grid-row: 1;
+    display: flex;
+    align-items: flex-end;
+    height: 40px;
+    color: white;
 `;

@@ -4,8 +4,8 @@ import {
     ChatInput,
     InputContainer,
     InputLabel,
-} from "../../styles/settings";
-import Toggle from "../Toggle";
+} from "../../../styles/settings";
+import Toggle from "../../Toggle";
 
 interface TextInputInputProps {
     label: string;

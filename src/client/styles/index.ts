@@ -1,25 +1,12 @@
 import styled from "styled-components";
 import { animated } from "react-spring";
-import SettingsSVG from "../svgComponents/SettingsSVG";
 
 export const PageHolder = styled("div")<{
-    flex?: boolean;
     center?: boolean;
 }>`
     width: 100%;
     height: 100%;
-    ${(props) =>
-        props.flex &&
-        `
-        display: flex;
-    `}
-    ${(props) =>
-        props.center &&
-        `
-        justify-content: center;
-        align-content: center;
-        align-items: center;
-    `}
+    ${(props) => props.center && flexCenter}
 `;
 
 export const Img = styled("img")<{
@@ -56,3 +43,24 @@ export const AnimatedWrapper = styled(animated.div)`
     height: fit-content;
 `;
 
+export const scrollbar = `
+    &::-webkit-scrollbar {
+        width: 14px;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+        border: 4px solid rgba(0, 0, 0, 0);
+        background-clip: padding-box;
+        border-radius: 9999px;
+        background-color: #AAAAAA;
+    }
+    &::-webkit-scrollbar-thumb:window-inactive {
+        background: rgba(0, 0, 0, 0.2); 
+    }
+`;
+export const flexCenter = `
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+`;
