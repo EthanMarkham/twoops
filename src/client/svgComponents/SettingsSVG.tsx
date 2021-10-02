@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useMemo, useEffect } from "react";
 import { animated, SpringValue, useSpring } from "react-spring";
 import styled from "styled-components";
 import useStore from "../store";
@@ -12,18 +12,23 @@ const Animated = styled(animated.svg)`
     transform: scale(5);
 `;
 
-interface Props {}
-function SvgComponent({}: Props) {
-    const [isShowing, setShowing] = useState<boolean>(false);
+interface Props {
+    mouseEntered: boolean;
+}
+function SvgComponent({ mouseEntered }: Props) {
     const togglePanel = useStore((state) => state.toggleSettings);
+    const panelShowing = useStore((state) => state.settings.showingPanel);
 
     const [settingsLogoTransition, settingsLogoAPI] = useSpring(() => ({
         opacity: 1,
     }));
 
+    const isShowing = useMemo<boolean>(
+        () => mouseEntered && !panelShowing,
+        [mouseEntered, panelShowing]
+    );
     useEffect(() => {
         settingsLogoAPI.start({ opacity: isShowing ? 1 : 0 });
-        console.log("toggle icon", isShowing);
     }, [isShowing]);
 
     return (
@@ -33,10 +38,7 @@ function SvgComponent({}: Props) {
             height={20}
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            onMouseEnter={() => setShowing(true)}
-            onMouseLeave={() => setShowing(false)}
             onClick={() => {
-                setShowing(false);
                 togglePanel();
             }}
         >

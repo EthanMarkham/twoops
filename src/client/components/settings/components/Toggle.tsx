@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { ToggleHolder, ToggleBackground, ToggleSlider } from "../styles/toggle";
+import { ToggleHolder, ToggleBackground, ToggleSlider } from "../../../styles/toggle";
 
 interface ToggleInputProps {
     toggle: boolean;
