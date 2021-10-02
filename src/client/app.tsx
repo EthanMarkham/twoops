@@ -2,13 +2,6 @@ import React, { Suspense, useEffect, useState } from "react";
 import useStore, { Page } from "./store";
 import { PageHolder } from "./styles";
 import GlobalFonts from "./styles/fonts";
-import {
-    useTransition,
-    animated as a,
-    config as springConfig,
-    useSpringRef,
-} from "react-spring";
-import SettingsPanel from "./components/settings/Settings";
 import SettingsLogo from "./svgComponents/SettingsSVG";
 import { _roots } from "@react-three/fiber";
 import useMouseEntered from "./hooks/useMouseEntered";
@@ -16,6 +9,9 @@ import useMouseEntered from "./hooks/useMouseEntered";
 const BucketGame = React.lazy(() => import("./components/canvas/ThreeCanvas"));
 const GameMessages = React.lazy(() => import("./components/GameMessages"));
 const Loading = React.lazy(() => import("./components/Loading"));
+const SettingsPanel = React.lazy(
+    () => import("./components/settings/Settings")
+);
 
 export const App: React.FC = () => {
     const page = useStore((state) => state.pageIndex);

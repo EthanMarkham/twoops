@@ -28,9 +28,10 @@ const NavLinkHolder = styled.div`
 interface NavBarProps {
     index: SECTION;
     onCancel: () => void;
+    scrollTo: (id: string) => void;
 }
 
-const NavBar = ({ index, onCancel }: NavBarProps) => {
+const NavBar = ({ index, onCancel, scrollTo }: NavBarProps) => {
     return (
         <Container>
             <CancelSVG onClick={onCancel} />
@@ -41,13 +42,12 @@ const NavBar = ({ index, onCancel }: NavBarProps) => {
                         text={s}
                         isActive={s === index}
                         onClick={function (): void {
-                            throw new Error("Function not implemented.");
+                            if (s !== index) scrollTo(s)
                         }}
                     />
                 ))}
             </NavLinkHolder>
             <LogoutSVG />
-
         </Container>
     );
 };

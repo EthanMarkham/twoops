@@ -1,4 +1,11 @@
-import React, { MutableRefObject, useEffect, useMemo, useState } from "react";
+import {
+    MutableRefObject,
+    useCallback,
+    useEffect,
+    useMemo,
+    useState,
+} from "react";
+import { config, useSpring } from "react-spring";
 
 interface TargetProps {
     id: string;
@@ -13,6 +20,9 @@ const useScrollTo = (
     parent: MutableRefObject<HTMLDivElement>,
     targets: TargetProps[]
 ) => {
+    if (targets.length === 0)
+        throw new Error("ScrollTo Hook must have at least one target defined.");
+
     const [scrollPosition, setScrollPosition] = useState<number>(0);
 
     const sections = useMemo<Sections[]>(() => {
@@ -26,43 +36,53 @@ const useScrollTo = (
             );
     }, [targets]);
 
-    const currentSectionIndex = useMemo<number>(() => {
-        if (sections.length <= 1) return 0;
-        else if (scrollPosition < sections[0].bounds.top) return 0;
-        else if (scrollPosition > sections[sections.length - 1].bounds.top)
-            return sections.length - 1;
-        else
-            return sections.findIndex(
-                (s) =>
-                    s.bounds.top <= scrollPosition &&
-                    s.bounds.bottom >= scrollPosition
-            );
-    }, [scrollPosition, sections]);
+    const [, api] = useSpring(() => ({ y: 0 }));
+
+    const scrollTo = useCallback(
+        (id: string): void => {
+            const target = sections.find((s) => s.id === id);
+            if (!parent.current || !target) return;
+            api.start({
+                to: { y: target.bounds.top - 140 },
+                reset: true,
+                from: { y: parent.current.scrollTop },
+                config: config.molasses,
+                onChange: (_, ctrl) => {
+                    parent.current.scrollTop = ctrl.get().y;
+                },
+            });
+        },
+        [parent, sections]
+    );
 
     const currentSection = useMemo<string>(() => {
         if (sections.length === 0) return targets[0].id;
-        if (!sections[currentSectionIndex])
-            throw new Error("Target scroller index is out of bounds.");
+        else if (scrollPosition > sections[sections.length - 1].bounds.top)
+            return sections[sections.length - 1].id;
 
-        return sections[currentSectionIndex].id;
-    }, [sections, currentSectionIndex]);
+        let s = sections.find(
+            (s) =>
+                s.bounds.top <= scrollPosition &&
+                s.bounds.bottom >= scrollPosition
+        );
+
+        return s ? s.id : targets[0].id;
+    }, [scrollPosition, sections]);
 
     //track current scroll position
     useEffect(() => {
-        if (parent.current) {
-            parent.current.addEventListener("scroll", (_) => {
-                setScrollPosition(parent.current.scrollTop);
-            });
-
-            return () => {
-                parent.current.removeEventListener("scroll", (_) => {
-                    setScrollPosition(parent.current.scrollTop);
-                });
-            };
-        }
+        const listenerEvent = () => {
+            setScrollPosition(parent.current.scrollTop);
+        };
+        parent.current &&
+            parent.current.addEventListener("scroll", listenerEvent);
+        return () => {
+            parent.current &&
+                parent.current.removeEventListener("scroll", listenerEvent);
+        };
     }, [parent.current]);
 
-    return [currentSection] as const;
+    return [currentSection, scrollTo] as const;
 };
 
 export default useScrollTo;

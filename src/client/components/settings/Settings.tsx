@@ -36,7 +36,7 @@ const SettingsPanel = () => {
     const colorSection =
         React.useRef() as React.MutableRefObject<HTMLDivElement>;
 
-    const [currentSection] = useScrollTo(mainContainer, [
+    const [currentSection, scrollTo] = useScrollTo(mainContainer, [
         { element: chatSection, id: SECTION.CHAT },
         { element: colorSection, id: SECTION.COLORS },
     ]);
@@ -91,6 +91,7 @@ const SettingsPanel = () => {
                         >
                             <NavBar
                                 index={currentSection as SECTION}
+                                scrollTo={scrollTo}
                                 onCancel={() => togglePanel()}
                             />
                             <Body ref={mainContainer}>

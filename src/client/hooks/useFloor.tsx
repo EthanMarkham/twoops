@@ -10,6 +10,7 @@ const useFloor = (ballPosition: Triplet) => {
         //FLOOR
         usePlane(() => ({
             position: [0, -30, 0],
+            type: "Static",
             rotation: [-Math.PI / 2, 0, 0],
             material: {
                 friction: 0,
