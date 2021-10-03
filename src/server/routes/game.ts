@@ -26,7 +26,7 @@ router.get("/init", verifyUser, async (req: any, res: any) => {
                 },
                 ballsSpawn: settings.ballSpawn,
                 channel: settings.channel,
-                hoopLocation: roundInfo.hoopLocation,
+                hoopPosition: roundInfo.hoopLocation,
                 attempts: roundInfo.shots.length,
                 roundID: roundInfo._id,
             });

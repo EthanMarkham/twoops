@@ -16,7 +16,6 @@ const CameraController = () => {
 
     useEffect(() => {
         if (!isInitialized) {
-            console.log('initializing camera position.')
             camera.position.set(0, 15, -20);
             camera.rotation.set(-Math.PI / 80, Math.PI, 0);
             setInitialized(true);

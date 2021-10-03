@@ -29,31 +29,14 @@ export default function Hoop(_props: any) {
         "/assets/models/hoopModel.glb"
     ) as GLTFResult;
 
-    const [results, resetHits] = useHoopHitboxes(nodes);
+    useHoopHitboxes(nodes);
 
-    const [isResponding, setRespondingStatus] = useState<boolean>(false);
-
-    const resultsRequested: boolean = useStore(
-        (state) => state.roundInfo.results.requested
-    );
-
-    const hoopPosition = useStore((state) => state.roundInfo.hoopLocation);
+    const hoopPosition = useStore((state) => state.roundInfo.hoopPosition);
+    const s = useStore((state) => state.roundInfo);
 
     const colors = useStore((state) => state.settings.colors);
 
-    const setResults = useStore((state) => state.setResults);
-
-    useEffect(() => {
-        if (resultsRequested && !isResponding) {
-            setRespondingStatus(true);
-            setResults(results, () => {
-                resetHits();
-                setRespondingStatus(false);
-            });
-        }
-    }, [resultsRequested, results, isResponding]);
-
-    
+    useEffect(() => console.log(s), [s])
     //backboard material
     const backboardMaterial = useMemo(
         (): MeshStandardMaterial =>
