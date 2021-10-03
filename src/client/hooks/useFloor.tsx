@@ -13,6 +13,7 @@ const useFloor = (ballPosition: Triplet) => {
             userData: {
                 id: "floor"
             },
+            type: "Static",
             rotation: [-Math.PI / 2, 0, 0],
             material: {
                 friction: 0,

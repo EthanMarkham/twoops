@@ -3,7 +3,7 @@ import {
     InputContainer,
     InputLabel,
 } from "../../../styles/settings";
-import Toggle from "../../Toggle";
+import Toggle from "../components/Toggle";
 
 interface TextInputInputProps {
     label: string;
