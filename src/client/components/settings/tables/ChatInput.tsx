@@ -9,7 +9,10 @@ interface TableSectionInputProps {
     updateState(value: any, key: keyof ChatInfo): void;
 }
 
-function ChatInput({ chatCopy, updateState }: TableSectionInputProps) {
+export const ChatInput = React.forwardRef<
+    HTMLDivElement,
+    TableSectionInputProps
+>(({ chatCopy, updateState }, ref) => {
     const keyMap = Object.keys(chatCopy).map((k) => ({
         key: k as keyof ChatInfo,
         value: chatCopy[k as keyof ChatInfo],
@@ -17,7 +20,7 @@ function ChatInput({ chatCopy, updateState }: TableSectionInputProps) {
     }));
 
     return (
-        <SettingsTable>
+        <SettingsTable ref={ref}>
             <TableHeader>Chat</TableHeader>
             {keyMap.map(({ key, value, type }, i) => {
                 switch (type) {
@@ -50,6 +53,6 @@ function ChatInput({ chatCopy, updateState }: TableSectionInputProps) {
             })}
         </SettingsTable>
     );
-}
+});
 
 export default ChatInput;
