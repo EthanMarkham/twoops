@@ -21,9 +21,6 @@ const Scene = (_props: any) => {
 
         socket.on("NEW_SHOT", ({ user, shot }: ShotInfo) => {
             socket.emit("ACKNOWLEDGED_SHOT", channel);
-            console.log("hooked shot", user, shot);
-            console.log("hooked at " + new Date().getTime());
-
             setShot(user, [shot.x, shot.y, shot.z]);
         });
         return () => {

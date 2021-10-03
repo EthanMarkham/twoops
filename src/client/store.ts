@@ -10,16 +10,18 @@ export enum Page {
     ERROR = "ERROR",
 }
 
-interface RoundInfo {
+interface NewRoundInfo {
+    hoopPosition: Triplet;
     id: string;
     attempts: number;
-    hoopLocation: Triplet;
+}
+
+interface RoundInfo extends NewRoundInfo {
     shot: {
         user: string | null;
         throwValues: Triplet;
     };
     results: {
-        requested: boolean;
         isAirball: boolean;
         success: boolean;
         showing: boolean;
@@ -67,8 +69,11 @@ export interface Store {
     toggleSettings: () => void;
     updateSettings(info: SettingsInfo): void;
     setShot(user: string, value: Triplet): void;
-    setResults(data: ResultMessage, callback: () => void): void;
-    requestResults(): void;
+    setResults(
+        data: ResultMessage,
+        callback: (data: NewRoundInfo) => void
+    ): void;
+    newRound(data: NewRoundInfo): void;
 }
 
 const DEFAULTS: {
@@ -102,9 +107,8 @@ const DEFAULTS: {
             user: null,
             throwValues: [0, 0, 0],
         },
-        hoopLocation: [0, 0, -500],
+        hoopPosition: [0, 0, -500],
         results: {
-            requested: false,
             showing: false,
             isAirball: true,
             success: false,
@@ -166,7 +170,7 @@ const useStore = create<Store>((set, get) => ({
                             ...state.roundInfo,
                             id: data.roundID,
                             attempts: data.attempts,
-                            hoopLocation: data.hoopLocation,
+                            hoopPosition: data.hoopPosition,
                         },
                     }));
                 }
@@ -192,6 +196,17 @@ const useStore = create<Store>((set, get) => ({
         });
     },
     setResults({ success, isAirball }, callback) {
+        set((state) => ({
+            ...state,
+            roundInfo: {
+                ...state.roundInfo,
+                results: {
+                    showing: true,
+                    isAirball: isAirball,
+                    success: success,
+                },
+            },
+        }));
         const copy: Store = get();
         fetch("/api/logShot", {
             method: "POST",
@@ -207,40 +222,15 @@ const useStore = create<Store>((set, get) => ({
             .then((response) => response.json())
             .then((data) => {
                 console.log("logged response", data);
-                callback();
-                set((state) => ({
-                    ...state,
-                    roundInfo: {
-                        ...DEFAULTS.ROUND,
-                        hoopLocation: data.hoopPosition,
-                        id: data.roundID,
-                        attempts: data.attempts,
-                    },
-                }));
+                callback(data);
             });
-
-        set((state) => ({
-            ...state,
-            roundInfo: {
-                ...state.roundInfo,
-                results: {
-                    requested: false,
-                    showing: true,
-                    isAirball: isAirball,
-                    success: success,
-                },
-            },
-        }));
     },
-    requestResults() {
+    newRound(data) {
         set((state) => ({
             ...state,
             roundInfo: {
-                ...state.roundInfo,
-                results: {
-                    ...state.roundInfo.results,
-                    requested: true,
-                },
+                ...DEFAULTS.ROUND,
+                ...data,
             },
         }));
     },

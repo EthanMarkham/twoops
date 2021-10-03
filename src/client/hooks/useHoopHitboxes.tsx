@@ -18,11 +18,8 @@ interface Results {
     isAirball: boolean;
 }
 
-const useHoopHitboxes = (nodes: any): [Results, () => void] => {
-    const [topHit, setTopHit] = useState<number>(0);
-    const [bottomHit, setBottomHit] = useState<number>(0);
-    const [hitHoop, setHitHoop] = useState<boolean>(false);
-    const hoopPosition = useStore((state) => state.roundInfo.hoopLocation);
+const useHoopHitboxes = (nodes: any): void => {
+    const hoopPosition = useStore((state) => state.roundInfo.hoopPosition);
 
     const hitbox: HitBoxPositions = useMemo<HitBoxPositions>(
         () => ({
@@ -54,28 +51,13 @@ const useHoopHitboxes = (nodes: any): [Results, () => void] => {
         [hoopPosition, nodes]
     );
 
-    const resetHits = () => {
-        setTopHit(0);
-        setBottomHit(0);
-        setHitHoop(false);
-    };
-
-    const results = useMemo(
-        (): {
-            success: boolean;
-            isAirball: boolean;
-        } => ({
-            success: !!(topHit !== 0 && bottomHit !== 0 && topHit < bottomHit),
-            isAirball: !hitHoop,
-        }),
-        [topHit, bottomHit, hitHoop]
-    );
-
     const [, hoopAPI] = useTrimesh(() => ({
         type: "Static",
         position: hitbox.main,
         mass: 1,
-        onCollide: () => setHitHoop(true),
+        userData: {
+            id: "hoop",
+        },
         args: [
             nodes.HitBox.geometry!.attributes!.position!.array ||
                 ([0, 0, 0] as ArrayLike<number>),
@@ -91,7 +73,9 @@ const useHoopHitboxes = (nodes: any): [Results, () => void] => {
         type: "Static",
         position: hitbox.top,
         collisionResponse: 0,
-        onCollide: () => setTopHit(new Date().getTime()),
+        userData: {
+            id: "hoop_trigger_top",
+        },
         args: [
             nodes.BasketTrigger_1!.geometry!.attributes!.position!.array ||
                 ([0, 0, 0] as ArrayLike<number>),
@@ -106,7 +90,9 @@ const useHoopHitboxes = (nodes: any): [Results, () => void] => {
         type: "Static",
         position: offsetTriplet(hitbox.bottom, [0, -2, 0]),
         collisionResponse: 0,
-        onCollide: () => setBottomHit(new Date().getTime()),
+        userData: {
+            id: "hoop_trigger_bottom",
+        },
         args: [
             nodes.BasketTrigger_2!.geometry!.attributes!.position!.array ||
                 ([0, 0, 0] as ArrayLike<number>),
@@ -118,13 +104,11 @@ const useHoopHitboxes = (nodes: any): [Results, () => void] => {
 
     useEffect(() => {
         hoopAPI.position.set(...hitbox.main);
-        topBucketAPI.position.set(...offsetTriplet(hitbox.top, [0, 3, -0]));
+        topBucketAPI.position.set(...hitbox.top);
         bottomBucketAPI.position.set(
             ...offsetTriplet(hitbox.bottom, [0, -2, -0])
         );
     }, [hitbox]);
-
-    return [results, resetHits];
 };
 
 export default useHoopHitboxes;
